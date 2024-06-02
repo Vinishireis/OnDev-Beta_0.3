@@ -1,0 +1,282 @@
+/* Estilizando a página principal */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.service-details, .developer-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.service-details img, .developer-details img {
+    max-width: 200px;
+    max-height: 200px;
+    margin-right: 20px;
+    border-radius: 8px;
+}
+
+.details {
+    flex: 1;
+}
+
+.details h2 {
+    color: #555;
+    margin-top: 0;
+}
+
+.details p {
+    color: #666;
+}
+
+.price {
+    color: #d9534f;
+    font-size: 1.5em;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #5cb85c;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #4cae4c;
+}
+
+.profile-pic {
+    max-width: 100px;
+    border-radius: 50%;
+}
+
+/* Estilizando o modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover, .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    color: #333;
+}
+
+/* Estilizando as imagens no modal */
+.modal-images {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.modal-img {
+    max-width: 45%;
+    border-radius: 8px;
+}
+
+.modal-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.modal-content table, .modal-content th, .modal-content td {
+    border: 1px solid #ddd;
+}
+
+.modal-content th, .modal-content td {
+    padding: 8px;
+    text-align: left;
+}
+
+.modal-content th {
+    background-color: #f4f4f4;
+}
+
+#contratarForm {
+    margin-top: 20px;
+}
+
+#contratarForm label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+#contratarForm input[type="text"],
+#contratarForm textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#contratarForm button {
+    background-color: #5cb85c;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#contratarForm button:hover {
+    background-color: #4cae4c;
+}
+.profile-dropdown {
+    position: relative;
+    width: fit-content;
+  }
+  
+  .profile-dropdown-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    width: 150px;
+    border-radius: 50px;
+    color: var(--black);
+    /* background-color: white;
+    box-shadow: var(--shadow); */
+  
+    cursor: pointer;
+    border: 1px solid var(--secondary);
+    transition: box-shadow 0.2s ease-in, background-color 0.2s ease-in,
+      border 0.3s;
+  }
+  
+  .profile-dropdown-btn:hover {
+    background-color: var(--secondary-light-2);
+    box-shadow: var(--shadow);
+  }
+  
+  .profile-img {
+    position: relative;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: url(./assets/profile-pic.jpg);
+    background-size: cover;
+  }
+  
+  .profile-img i {
+    position: absolute;
+    right: 0;
+    bottom: 0.3rem;
+    font-size: 0.5rem;
+    color: var(--green);
+  }
+  
+  .profile-dropdown-btn span {
+    margin: 0 0.5rem;
+    margin-right: 0;
+  }
+  
+  .profile-dropdown-list {
+    position: absolute;
+    top: 68px;
+    width: 220px;
+    right: 0;
+    background-color: var(--white);
+    border-radius: 10px;
+    max-height: 0;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: max-height 0.5s;
+  }
+  
+  .profile-dropdown-list hr {
+    border: 0.5px solid var(--green);
+  }
+  
+  .profile-dropdown-list.active {
+    max-height: 500px;
+  }
+  
+  .profile-dropdown-list-item {
+    padding: 0.5rem 0rem 0.5rem 1rem;
+    transition: background-color 0.2s ease-in, padding-left 0.2s;
+  }
+  
+  .profile-dropdown-list-item a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--black);
+  }
+  
+  .profile-dropdown-list-item a i {
+    margin-right: 0.8rem;
+    font-size: 1.1rem;
+    width: 2.3rem;
+    height: 2.3rem;
+    background-color: var(--secondary);
+    color: var(--white);
+    line-height: 2.3rem;
+    text-align: center;
+    margin-right: 1rem;
+    border-radius: 50%;
+    transition: margin-right 0.3s;
+  }
+  
+  .profile-dropdown-list-item:hover {
+    padding-left: 1.5rem;
+    background-color: var(--secondary-light);
+  }
+  
