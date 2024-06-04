@@ -1,0 +1,277 @@
+/* Estilos base */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.container-full {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #000000;
+}
+
+form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.details {
+    flex: 1 1 100%;
+    margin-bottom: 20px;
+}
+
+.fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.input-field {
+    flex: 1 1 calc(50% - 20px);
+    display: flex;
+    flex-direction: column;
+}
+
+.input-field label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.input-field input,
+.input-field select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.input-field input[type="date"] {
+    padding: 9px;
+}
+
+input[type="file"] {
+    border: none;
+}
+
+input:focus, select:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .input-field {
+        flex: 1 1 100%;
+    }
+
+    .button-group {
+        justify-content: center;
+    }
+}
+
+/* Estilos da seção de perfil */
+.profile-body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.profile, .info {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.profile {
+    flex: 1 1 calc(30% - 20px);
+}
+
+.profile img {
+    width: 100%;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+.profile h2, .profile p {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.info {
+    flex: 1 1 calc(70% - 20px);
+}
+
+.info h2 {
+    margin: 0 0 15px;
+    font-size: 20px;
+    color: #333;
+}
+
+.info p {
+    margin: 0 0 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+.info table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.info th, .info td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.info th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info li {
+    margin-bottom: 5px;
+    padding-left: 10px;
+    position: relative;
+}
+
+.info li:before {
+    content: "\f0da"; /* Font Awesome icon for checkmark */
+    font-family: FontAwesome;
+    position: absolute;
+    left: 0;
+    top: 5px;
+    color: #4CAF50;
+}
+
+/* Estilos do painel de compartilhamento */
+.share-panel {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px 0 0 8px;
+    padding: 10px;
+    z-index: 1000;
+}
+
+.share-panel .share-icon {
+    font-size: 24px;
+    color: #333; /* Cor dos ícones */
+    margin-right: 10px; 
+    justify-items: center;
+    display: block; /* Para colocar os ícones um em cima do outro */
+}
+
+
+.share-panel .share-icon img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.share-panel .share-icon img:hover {
+    transform: scale(1.1);
+}
+
+#skillForm {
+    margin: 20px 0;
+}
+
+#skillsList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#skillsList li {
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+}
+.profile ul {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.profile ul li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.profile ul li a {
+    text-decoration: none;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    transition: background-color 0.3s ease;
+}
+
+.profile ul li a:hover {
+    background-color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+    .profile, .info {
+        flex: 1 1 100%;
+        margin-bottom: 20px;
+    }
+
+    .share-panel {
+        position: static;
+        transform: none;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+}

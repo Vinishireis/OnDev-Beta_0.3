@@ -39,9 +39,9 @@ if(isset($_POST['email']) && isset($_POST['password'])) {
                     
                     // Redireciona para o painel correspondente
                     if ($tipo_usuario == 'desenvolvedor') {
-                        header("Location: ..\dashboard.php");
+                        header("Location: dashboard.php");
                     } else {
-                        header("Location: session.php");
+                        header("Location: dashuser.php");
                     }
                     $login_sucesso = true; // Defina como verdadeiro se o login for bem-sucedido
                 } else {

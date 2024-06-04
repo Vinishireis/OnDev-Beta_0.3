@@ -18,11 +18,16 @@
 <!--=============== CSS ===============-->
 <link rel="preload" href="assets/fonts/material-icons/material-icons.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/material-icons/material-icons-outlined.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/img/svg-icons/Loading_Screen.svg" as="image" type="image/svg+xml">
 
 <title>OnDev 404</title>
 </head>
 
 <body>
+<div id="loading-screen" style="display: none;">
+    <img src="assets/img/svg-icons/Loading_Screen.svg" alt="Loading">
+</div>
+
 
 	<main class="main">
 		

@@ -1,4 +1,7 @@
 <?php
+// Inclui o arquivo config.php para obter a conexão com o banco de dados
+include 'config.php';
+
 // Inicia a sessão
 session_start();
 
@@ -6,8 +9,30 @@ session_start();
 if (isset($_SESSION['id'])) {
     // Atribui o valor da variável de sessão 'nome' à variável $nome
     $nome = $_SESSION['nome'];
+    
+    // Obtém o objeto mysqli da configuração
+    $mysqli = include 'config.php';
+
+    // Prepara a consulta SQL para buscar o perfil do usuário
+    $id = $_SESSION['id']; // Armazena o valor em uma variável para segurança
+    $sql = "SELECT id, foto_perfil FROM tb_cadastro_users tb_cadastro_developer WHERE id = $id";
+
+    // Executa a consulta SQL
+    $result = $mysqli->query($sql);
+
+    // Verifica se a consulta foi bem-sucedida
+    if ($row = $result->fetch_assoc()) {
+        $id = $row['id'];
+        $foto_nome = $row['foto_perfil'];
+        $caminho_imagem = "assets/img/users/$foto_nome";
+    } else {
+        echo "Erro ao recuperar a foto de perfil do banco de dados.";
+        exit;
+    }
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -15,12 +40,11 @@ if (isset($_SESSION['id'])) {
     <meta name="description" content="Description">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-        
-	
+
    <!--=============== REMIXICONS ===============-->
    <meta name='robots' content='max-image-preview:large'/>
    <link rel="alternate" type="application/rss+xml" title="Make Dream Website &raquo; Feed" href="https://template.makedreamwebsite.com/feed/"/>
-   <link rel="alt ernate" type="application/rss+xml" title="Make Dream Website &raquo; Comments Feed" href="https://template.makedreamwebsite.com/comments/feed/"/>
+   <link rel="alternate" type="application/rss+xml" title="Make Dream Website &raquo; Comments Feed" href="https://template.makedreamwebsite.com/comments/feed/"/>
    <link rel="icon" href="assets\img\favicon\logo-oficial.svg" type="image/x-icon"> 
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -40,179 +64,133 @@ if (isset($_SESSION['id'])) {
 
 <body>
 
-	<main class="main">
-		
-		<div class="main-inner">
+    <main class="main">
+        
+        <div class="main-inner">
 
-			<!-- Begin mobile main menu -->
-			<nav class="mmm">
-    <div class="mmm-content">
-        <ul class="mmm-list">
-            <li><a href="index.php">Início</a></li>
-            <li><a href="about-us.php">Sobre Nós</a></li>
-            <li><a href="services.php">Serviços</a></li>
-            <li><a href="plans.php">Planos</a></li>
-            <li><a href="news.php">Novidades</a></li>
-            <li><a href="contacts.php">Contato</a></li>
-            <li><a href="login.php" data-title="Login"><span>Login</span></a></li>
-            <li><a href="login.php" data-title="Prestador"><span>Prestador</span></a></li>
-        </ul>
-		<div class="profile-dropdown mmm-content">
-        <div onclick="toggle()" class="profile-dropdown-btn">
-            <div class="profile-img">
-            </div>
-            <span>Victoria <i class="fa-solid fa-angle-down"></i></span>
-        </div>
-        <ul class="profile-dropdown-list mmm-list">
-            <li class="profile-dropdown-list-item">
-                <a href="#">
-                    <i class="fa-regular fa-user"></i> Editar Perfil
-                </a>
-            </li>
-            <li class="profile-dropdown-list-item">
-                <a href="#">
-                    <i class="fa-regular fa-envelope"></i> Mensagens
-                </a>
-            </li>
-            <li class="profile-dropdown-list-item">
-                <a href="dashboard.php">
-                    <i class="fa-solid fa-chart-line"></i> DashBoard
-                </a>
-            </li>
-            <li class="profile-dropdown-list-item">
-                <a href="#">
-                    <i class="fa-solid fa-sliders"></i> Configurações
-                </a>
-            </li>
-            <li class="profile-dropdown-list-item">
-                <a href="contacts.php">
-                    <i class="fa-regular fa-circle-question"></i> Ajuda e Suporte
-                </a>
-            </li>
-            <hr />
-            <li class="profile-dropdown-list-item">
-                <a href="#">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
-                </a>
-            </li>
-        </ul>
-    </div>
-	</div>    
-</nav>
+            <!-- Begin mobile main menu -->
+            <nav class="mmm">
+                <div class="mmm-content">
+                    <ul class="mmm-list">
+                        <li><a href="index.php">Início</a></li>
+                        <li><a href="about-us.php">Sobre Nós</a></li>
+                        <li><a href="services.php">Serviços</a></li>
+                        <li><a href="plans.php">Planos</a></li>
+                        <li><a href="news.php">Novidades</a></li>
+                        <li><a href="contacts.php">Contato</a></li>
+                        <?php if (!isset($_SESSION['id'])): ?>
+                            <li><a href="login.php" data-title="Login"><span>Login</span></a></li>
+                        <?php endif; ?>
+                    </ul>
+                </div>    
+            </nav>
 
-<!-- End mobile main menu -->
+            <!-- End mobile main menu -->
 
-<header class="header header-minimal">
-    <nav class="header-fixed">
-        <div class="container">
-            <div class="row flex-nowrap align-items-center justify-content-between">
-                <div class="col-auto header-fixed-col logo-wrapper">
-                    <a href="index.php" class="logo" title="OnDev">
-                        <img src="assets/img/logo-oficial.png" width="40" height="40" alt="OnDev">
-                    </a>
-                </div>
-                <div class="col-auto col-xl col-static header-fixed-col d-none d-xl-block">
-                    <div class="row flex-nowrap align-items-center justify-content-end">
-                        <div class="col header-fixed-col d-none d-xl-block col-static">
-                            
-	<!-- Begin main menu -->
-	<nav class="main-mnu">
-    <ul class="main-mnu-list">
-        <li>
-            <a href="index.php" data-title="Início">
-                <span>Início</span>
-            </a>
-        </li>
-        <li>
-            <a href="about-us.php" data-title="Sobre Nós">
-                <span>Sobre Nós</span>
-            </a>
-        </li>
-        <li>
-            <a href="services.php" data-title="Serviços">
-                <span>Serviços</span>
-            </a>
-        </li>
-        <li>
-            <a href="plans.php" data-title="Planos">
-                <span>Planos</span>
-            </a>
-        </li>
-        <li>
-            <a href="news.php" data-title="Novidades">
-                <span>Novidades</span>
-            </a>
-        </li>
-        <li>
-            <a href="contacts.php" data-title="Contato">
-                <span>Contato</span>
-            </a>
-        </li>
-        <li>
-            <?php if (isset($_SESSION['id'])): ?>
-                <!-- Se o usuário estiver logado, exibe o nome do usuário e o botão de logout -->
-                <span><?php echo $nome; ?></span>
-                <a href="logout.php" data-title="Logout">
-                    <span>Logout</span>
-                </a>
-            <?php else: ?>
-                <!-- Se o usuário não estiver logado, exibe o link de login -->
-                <a href="login.php" data-title="Login">
-                    <span>Login</span>
-                </a>
-                <a href="login.php" data-title="Prestador">
-                    <span>Prestador</span>
-                </a>
-            <?php endif; ?>
-        </li>
-        <li class="profile-dropdown">
-            <div onclick="toggle()" class="profile-dropdown-btn">
-                <div class="profile-img">
-                    <i class="fa-solid fa-circle"></i>
-                </div>
-                <span>Victoria <i class="fa-solid fa-angle-down"></i></span>
-            </div>
-            <ul class="profile-dropdown-list">
-                <li class="profile-dropdown-list-item">
-                    <a href="dashuser.php">
-                        <i class="fa-regular fa-user"></i> Editar Perfil
-                    </a>
-                </li>
-                <li class="profile-dropdown-list-item">
-                    <a href="#">
-                        <i class="fa-regular fa-envelope"></i> Mensagens
-                    </a>
-                </li>
-                <li class="profile-dropdown-list-item">
-                    <a href="dashboard.php">
-                        <i class="fa-solid fa-chart-line"></i> Dashboard
-                    </a>
-                </li>
-                <li class="profile-dropdown-list-item">
-                    <a href="#">
-                        <i class="fa-solid fa-sliders"></i> Configurações
-                    </a>
-                </li>
-                <li class="profile-dropdown-list-item">
-                    <a href="./contacts.php">
-                        <i class="fa-regular fa-circle-question"></i> Ajuda e Suporte
-                    </a>
-                </li>
-                <hr />
-                <li class="profile-dropdown-list-item">
-                    <a href="#">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
-                    </a>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+            <header class="header header-minimal">
+                <nav class="header-fixed">
+                    <div class="container">
+                        <div class="row flex-nowrap align-items-center justify-content-between">
+						<div class="col-auto header-fixed-col logo-wrapper">
+  <a href="index.php" class="logo" title="OnDev">
+    <img src="assets/img/logo-oficial.png" class="enlarged-logo" alt="OnDev">
+  </a>
+</div>
 
-<!-- End main menu -->
-                        </div>
+                            <div class="col-auto col-xl col-static header-fixed-col d-none d-xl-block">
+                                <div class="row flex-nowrap align-items-center justify-content-end">
+                                    <div class="col header-fixed-col d-none d-xl-block col-static">
+                                        
+                                    <!-- Begin main menu -->
+                                    <nav class="main-mnu">
+                                        <ul class="main-mnu-list">
+                                            <li>
+                                                <a href="index.php" data-title="Início">
+                                                    <span>Início</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="about-us.php" data-title="Sobre Nós">
+                                                    <span>Sobre Nós</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="services.php" data-title="Serviços">
+                                                    <span>Serviços</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="plans.php" data-title="Planos">
+                                                    <span>Planos</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="news.php" data-title="Novidades">
+                                                    <span>Novidades</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="contacts.php" data-title="Contato">
+                                                    <span>Contato</span>
+                                                </a>
+                                            </li>
+                                            <?php if (isset($_SESSION['id'])): ?>
+                                                <!-- Se o usuário estiver logado, exibe o nome do usuário e o botão de logout -->
+                                                <li>
+                                                    <div class="profile-dropdown">
+                                                        <div onclick="toggle()" class="profile-dropdown-btn">
+														<div class="profile-img" style="background-image: url('<?php echo $caminho_imagem; ?>');"></div>
+                                                            <span><?php echo $nome; ?> <i class="fa-solid fa-angle-down"></i></span>
+                                                        </div>
+                                                        <ul class="profile-dropdown-list">
+                                                            <li class="profile-dropdown-list-item">
+                                                                <a href="dashuser.php">
+                                                                    <i class="fa-regular fa-user"></i> Editar Perfil
+                                                                </a>
+                                                            </li>
+                                                            <li class="profile-dropdown-list-item">
+                                                                <a href="#">
+                                                                    <i class="fa-regular fa-envelope"></i> Mensagens
+                                                                </a>
+                                                            </li>
+                                                            <li class="profile-dropdown-list-item">
+                                                                <a href="dashboard.php">
+                                                                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                                                                </a>
+                                                            </li>
+                                                            <li class="profile-dropdown-list-item">
+                                                                <a href="#">
+                                                                    <i class="fa-solid fa-sliders"></i> Configurações
+                                                                </a>
+                                                            </li>
+                                                            <li class="profile-dropdown-list-item">
+                                                                <a href="./contacts.php">
+                                                                    <i class="fa-regular fa-circle-question"></i> Ajuda e Suporte
+                                                                </a>
+                                                            </li>
+                                                            <hr />
+                                                            <li class="profile-dropdown-list-item">
+                                                                <a href="logout.php">
+                                                                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            <?php else: ?>
+                                                <!-- Se o usuário não estiver logado, exibe o link de login -->
+                                                <li>
+                                                    <a href="login.php" data-title="Login">
+                                                        <span>Login</span>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </nav>
+						</div>
                     </div>
                 </div>
+                                    <!-- End main menu -->
                 <div class="col-auto d-block d-xl-none header-fixed-col">
                     <div class="main-mnu-btn">
                         <span class="bar bar-1"></span>
@@ -669,5 +647,6 @@ if (isset($_SESSION['id'])) {
 <script src="assets/libs/pristine/pristine.min.js"></script>
 <script src="assets/js/custom.js"></script>
 <script src="assets/js/forms.js"></script>
+<script src="assets/js/script.js"></script>
 	
 </body></html>

@@ -5,61 +5,58 @@ session_start();
 // Verifica se o usuário está logado
 if (isset($_SESSION['id'])) {
     // Inclua o arquivo de configuração do banco de dados
-    include_once('login_new/config.php');
+    include_once('config.php');
+
+    // Verifique a conexão com o banco de dados
+    if ($mysqli->connect_errno) {
+        echo "Falha ao conectar ao MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+        exit;
+    }
 
     // Recupere o ID do usuário da sessão
     $id_usuario = $_SESSION['id'];
     $nome = $_SESSION['nome'];
 
     // Consulta SQL para recuperar os dados do usuário, incluindo a foto de perfil
-    $query = "SELECT id, foto_perfil FROM tb_cadastro_developer WHERE id = $id_usuario";
-    $result = mysqli_query($mysqli, $query);
+    $query = "SELECT id, foto_perfil FROM tb_cadastro_developer WHERE id = ?";
+    $stmt = mysqli_prepare($mysqli, $query);
+    if ($stmt === false) {
+        echo "Erro na preparação da consulta: " . mysqli_error($mysqli);
+        exit;
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $id_usuario);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     // Verifica se a consulta foi bem-sucedida
-    if ($result) {
-        // Extrai os dados da imagem do resultado da consulta
-        $row = mysqli_fetch_assoc($result);
+    if ($result && $row = mysqli_fetch_assoc($result)) {
         $id = $row['id'];
         $foto_nome = $row['foto_perfil'];
         
         // Define o caminho completo da imagem
         $caminho_imagem = "assets/img/users/$foto_nome";
-
     } else {
         // Em caso de erro na consulta
         echo "Erro ao recuperar a foto de perfil do banco de dados.";
         exit;
     }
+    
+    // Consulta para obter os serviços do usuário logado
+    $query = "SELECT * FROM tb_cad_servico_dev WHERE id_developer = ?";
+    $stmt = mysqli_prepare($mysqli, $query);
+    if ($stmt === false) {
+        echo "Erro na preparação da consulta: " . mysqli_error($mysqli);
+        exit;
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $id_usuario);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+} else {
+    echo "Usuário não está logado.";
+    exit;
 }
-
-    // Consulta SQL para recuperar os dados do usuário, incluindo a foto de perfil
-    $query = "SELECT id, foto_perfil FROM tb_cadastro_developer WHERE id = $id_usuario";
-    $result = mysqli_query($mysqli, $query);
-
-    // Verifica se a consulta foi bem-sucedida
-    if ($result) {
-        // Extrai os dados da imagem do resultado da consulta
-        $row = mysqli_fetch_assoc($result);
-        $id = $row['id'];
-        $foto_nome = $row['foto_perfil'];
-        
-        // Define o caminho completo da imagem
-        $caminho_imagem = "assets/img/users/$foto_nome";
-
-    } else {
-        // Em caso de erro na consulta
-        echo "Erro ao recuperar a foto de perfil do banco de dados.";
-        exit;
-    }
-// Não mexer na parte acima #########################################
-
-// Consulta para obter os serviços do usuário logado
-$query = "SELECT * FROM tb_cad_servico_dev WHERE id_developer = ?";
-$stmt = mysqli_prepare($mysqli, $query);
-mysqli_stmt_bind_param($stmt, "i", $id_usuario); // Alterado de $usuario_id para $id_usuario
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-
 ?>
 
 <!DOCTYPE html>

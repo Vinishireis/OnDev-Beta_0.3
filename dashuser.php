@@ -1,37 +1,99 @@
 <?php
-// Certifique-se de que você tem a sessão iniciada
 session_start();
 
-// Verifica se o usuário está logado
 if (isset($_SESSION['id'])) {
-    // Inclua o arquivo de configuração do banco de dados
-    include_once('login_new/config.php');
+    include_once('config.php');
 
-    // Recupere o ID do usuário da sessão
     $id_usuario = $_SESSION['id'];
     $nome = $_SESSION['nome'];
 
-    // Consulta SQL para recuperar os dados do usuário, incluindo a foto de perfil
-    $query = "SELECT id, foto_perfil FROM tb_cadastro_users WHERE id = $id_usuario";
+    // Recupera os dados do usuário
+    $query = "SELECT * FROM tb_cadastro_users WHERE id = $id_usuario";
     $result = mysqli_query($mysqli, $query);
 
-    // Verifica se a consulta foi bem-sucedida
     if ($result) {
-        // Extrai os dados da imagem do resultado da consulta
-        $row = mysqli_fetch_assoc($result);
-        $id = $row['id'];
-        $foto_nome = $row['foto_perfil'];
-        
-        // Define o caminho completo da imagem
+        $usuario = mysqli_fetch_assoc($result);
+        $id = $usuario['id'];
+        $foto_nome = $usuario['foto_perfil'];
         $caminho_imagem = "assets/img/users/$foto_nome";
-
     } else {
-        // Em caso de erro na consulta
-        echo "Erro ao recuperar a foto de perfil do banco de dados.";
+        echo "Erro ao recuperar os dados do banco de dados.";
         exit;
     }
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $nome = $_POST['nome'];
+        $sobrenome = $_POST['sobrenome'];
+        $email = $_POST['email'];
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $ddd = $_POST['ddd'];
+        $telefone = $_POST['telefone'];
+        $cep = $_POST['cep'];
+        $rua = $_POST['rua'];
+        $numero = $_POST['numero'];
+        $complemento = $_POST['complemento'];
+        $bairro = $_POST['bairro'];
+        $cidade = $_POST['cidade'];
+        $estado = $_POST['estado'];
+
+        if (!empty($_FILES['foto_perfil']['name'])) {
+            $foto_perfil = $_FILES['foto_perfil'];
+            $foto_nome = basename($foto_perfil['name']);
+            $foto_temp = $foto_perfil['tmp_name'];
+            $caminho_imagem = "assets/img/users/$foto_nome";
+
+            if (move_uploaded_file($foto_temp, $caminho_imagem)) {
+                $sql_update = "UPDATE tb_cadastro_users SET 
+                               nome = '$nome', 
+                               sobrenome = '$sobrenome', 
+                               email = '$email', 
+                               password = '$password', 
+                               ddd = '$ddd', 
+                               telefone = '$telefone', 
+                               cep = '$cep', 
+                               rua = '$rua', 
+                               numero = '$numero', 
+                               complemento = '$complemento', 
+                               bairro = '$bairro', 
+                               cidade = '$cidade', 
+                               estado = '$estado', 
+                               foto_perfil = '$foto_nome' 
+                               WHERE id = $id_usuario";
+            } else {
+                echo "Erro ao fazer upload da imagem.";
+                exit();
+            }
+        } else {
+            $sql_update = "UPDATE tb_cadastro_users SET 
+                           nome = '$nome', 
+                           sobrenome = '$sobrenome', 
+                           email = '$email', 
+                           password = '$password', 
+                           ddd = '$ddd', 
+                           telefone = '$telefone', 
+                           cep = '$cep', 
+                           rua = '$rua', 
+                           numero = '$numero', 
+                           complemento = '$complemento', 
+                           bairro = '$bairro', 
+                           cidade = '$cidade', 
+                           estado = '$estado' 
+                           WHERE id = $id_usuario";
+        }
+
+        if ($mysqli->query($sql_update) === TRUE) {
+            echo "Dados atualizados com sucesso!";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        } else {
+            echo "Erro ao atualizar os dados: " . $mysqli->error;
+        }
+    }
+} else {
+    echo "Usuário não está logado.";
 }
 
+$mysqli->close();
 ?>
 
 <!DOCTYPE html>
@@ -101,7 +163,7 @@ if (isset($_SESSION['id'])) {
 				</a>
 			</li>
 			<li>
-				<a href="alterar_dados_user.php">
+				<a href="alterar_dados.php">
 					<i class='bx bxs-doughnut-chart' ></i>
 					<span class="text">Meu Perfil</span>
 				</a>
@@ -122,7 +184,7 @@ if (isset($_SESSION['id'])) {
 				</a>
 			</li>
 			<li>
-			<a href="login_new/logout.php" class="logout" >
+			<a href="logout.php" class="logout" >
 					<i class='bx bxs-log-out-circle' ></i>
 					<span class="text">Logout</span>
 				</a>

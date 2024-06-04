@@ -5,7 +5,7 @@ session_start();
 // Verifica se o usuário está logado
 if (isset($_SESSION['id'])) {
     // Inclua o arquivo de configuração do banco de dados
-    include_once('login_new/config.php');
+    include_once('config.php');
 
     // Recupere o ID do usuário da sessão
     $usuario_id = $_SESSION['id'];

@@ -113,7 +113,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href=".\login_new\login.php" data-title="Login">
+                                        <a href="login.php" data-title="Login">
                                             <span>Login</span>
                                         </a>
                                     </li>

@@ -1,14 +1,19 @@
 <?php
 if (isset($_POST['submit'])) {
-    // Inclui o arquivo de configuração apenas se o formulário for enviado
     include_once('config.php');
 
     // Função para lidar com o upload da imagem
-    function uploadImagem($nomeCampo) {
+    function uploadImagem($nomeCampo)
+    {
         $diretorio = "../assets/img/users/";
         $imagemNome = $_FILES[$nomeCampo]['name'];
         $imagemTmp = $_FILES[$nomeCampo]['tmp_name'];
         $caminhoImagem = $diretorio . $imagemNome;
+
+        // Verifica se o diretório existe, se não, cria o diretório
+        if (!is_dir($diretorio)) {
+            mkdir($diretorio, 0777, true);
+        }
 
         // Move a imagem para o diretório especificado
         if (move_uploaded_file($imagemTmp, $caminhoImagem)) {
@@ -31,60 +36,6 @@ if (isset($_POST['submit'])) {
             exit;
         }
 
-        // Verificar formato válido de e-mail
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            echo "O e-mail não é válido.";
-            exit;
-        }
-
-        // Verificar se o e-mail já está em uso
-        $check_email_query = "SELECT * FROM tb_cadastro_users WHERE email = ?";
-        $stmt = mysqli_prepare($mysqli, $check_email_query);
-        mysqli_stmt_bind_param($stmt, "s", $email);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_store_result($stmt);
-        if (mysqli_stmt_num_rows($stmt) > 0) {
-            echo "O e-mail já está em uso.";
-            exit;
-        }
-
-        // Verificar a senha (pelo menos uma letra maiúscula, um número e um dos caracteres especiais)
-        if (!preg_match('/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#])[A-Za-z\d!@#]{8,}$/', $password)) {
-            echo "A senha deve conter pelo menos uma letra maiúscula, um número e um dos seguintes caracteres especiais: !@#";
-            exit;
-        }
-
-        // Verificação e processamento do upload da imagem
-        $caminhoImagem = uploadImagem('foto_perfil');
-
-        // Verificar se houve erro no upload da imagem
-        if ($caminhoImagem === null) {
-            echo "Erro ao fazer upload da imagem.";
-            exit;
-        }
-
-        // Obter apenas o nome do arquivo da imagem
-        $nomeImagem = basename($caminhoImagem);
-
-        // Hash da senha usando password_hash()
-        $senha_hash = password_hash($password, PASSWORD_DEFAULT);
-
-        // Obter os demais dados do formulário
-        $nome = $_POST['nome'];
-        $sobrenome = $_POST['sobrenome'];
-        $cpf = $_POST['cpf'];
-        $data_nasc = $_POST['data_nasc'];
-        $genero = $_POST['genero'];
-        $ddd = $_POST['ddd'];
-        $telefone = $_POST['telefone'];
-        $cep = $_POST['cep'];
-        $rua = $_POST['rua'];
-        $numero = $_POST['numero'];
-        $complemento = $_POST['complemento'];
-        $bairro = $_POST['bairro'];
-        $cidade = $_POST['cidade'];
-        $estado = $_POST['estado'];
-
         // Verifica se o campo tipo_usuario foi marcado
         if (isset($_POST['tipo_usuario']) && !empty($_POST['tipo_usuario'])) {
             $tipo_usuario = $_POST['tipo_usuario'][0]; // Assume-se que apenas uma opção será selecionada
@@ -92,34 +43,76 @@ if (isset($_POST['submit'])) {
             // Determina a tabela onde os dados serão inseridos baseado no tipo de usuário
             $tabela = ($tipo_usuario == 'consumidor') ? 'tb_cadastro_users' : 'tb_cadastro_developer';
 
+            // Verificar se o e-mail já está em uso na tabela correspondente
+            $check_email_query = "SELECT * FROM $tabela WHERE email = '$email'";
+            $check_email_result = mysqli_query($mysqli, $check_email_query);
+            if (mysqli_num_rows($check_email_result) > 0) {
+                echo "O e-mail já está em uso nesta tabela.";
+                exit;
+            }
+
+            // Verificação e processamento do upload da imagem
+            $caminhoImagem = uploadImagem('foto_perfil');
+
+            // Verificar se houve erro no upload da imagem
+            if ($caminhoImagem === null) {
+                echo "Erro ao fazer upload da imagem.";
+                exit;
+            }
+
+            // Obter apenas o nome do arquivo da imagem
+            $nomeImagem = basename($caminhoImagem);
+
+            // Hash da senha usando password_hash()
+            $senha_hash = password_hash($password, PASSWORD_DEFAULT);
+
+            // Obter os demais dados do formulário
+            $nome = $_POST['nome'];
+            $sobrenome = $_POST['sobrenome'];
+            $cpf = $_POST['cpf'];
+            $data_nasc = $_POST['data_nasc'];
+            $genero = $_POST['genero'];
+            $ddd = $_POST['ddd'];
+            $telefone = $_POST['telefone'];
+            $cep = $_POST['cep'];
+            $rua = $_POST['rua'];
+            $numero = $_POST['numero'];
+            $complemento = $_POST['complemento'];
+            $bairro = $_POST['bairro'];
+            $cidade = $_POST['cidade'];
+            $estado = $_POST['estado'];
+
+            // Trunca o telefone para garantir que tenha no máximo 15 caracteres
+            if (strlen($telefone) > 15) {
+                $telefone = substr($telefone, 0, 15);
+            }
+
             // Insere os dados na tabela correspondente
-            $query = "INSERT INTO $tabela (nome, sobrenome, cpf, data_nasc, genero, ddd, telefone, email, password, cep, rua, numero, complemento, bairro, cidade, estado, foto_perfil) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = mysqli_prepare($mysqli, $query);
+            $result = mysqli_prepare($mysqli, "INSERT INTO $tabela(nome, sobrenome, cpf, data_nasc, genero, ddd, telefone, email, password, cep, rua, numero, complemento, bairro, cidade, estado, foto_perfil) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Verifica se a preparação da consulta foi bem-sucedida
-            if ($stmt) {
+            if ($result) {
                 // Vincula os parâmetros à consulta preparada
-                mysqli_stmt_bind_param($stmt, "sssssssssssssssss", $nome, $sobrenome, $cpf, $data_nasc, $genero, $ddd, $telefone, $email, $senha_hash, $cep, $rua, $numero, $complemento, $bairro, $cidade, $estado, $nomeImagem);
+                mysqli_stmt_bind_param($result, "sssssssssssssssss", $nome, $sobrenome, $cpf, $data_nasc, $genero, $ddd, $telefone, $email, $senha_hash, $cep, $rua, $numero, $complemento, $bairro, $cidade, $estado, $nomeImagem);
 
                 // Executa a consulta preparada
-                if (mysqli_stmt_execute($stmt)) {
+                $executed = mysqli_stmt_execute($result);
+
+                // Verifica se a inserção foi bem-sucedida
+                if ($executed) {
                     // Redireciona para a página de login
-                    header('Location: login.php?success=true');
+                    header('Location: login.php');
                     exit; // Certifique-se de sair do script após o redirecionamento
                 } else {
-                    echo "Erro ao inserir dados no banco de dados: " . mysqli_stmt_error($stmt);
+                    echo "Erro ao inserir dados no banco de dados.";
                 }
             } else {
-                echo "Erro ao preparar a declaração SQL: " . mysqli_error($mysqli);
+                echo "Erro ao preparar a declaração SQL.";
             }
         }
     }
 }
 ?>
-
-
-
-
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -130,7 +123,6 @@ if (isset($_POST['submit'])) {
     
     <!--=============== REMIXICONS ===============-->
    <link rel="icon" href="assets\img\favicon\logo-oficial.svg" type="image/x-icon"> <link rel="stylesheet" href="assets/css/bootstrap-grid.css">
-<link rel="stylesheet" href="assets/css/style.css">
 <link rel="preload" href="assets/fonts/source-sans-pro-v21-latin/source-sans-pro-v21-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/source-sans-pro-v21-latin/source-sans-pro-v21-latin-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/montserrat-v25-latin/montserrat-v25-latin-700.woff2" as="font" type="font/woff2" crossorigin>
@@ -151,12 +143,12 @@ if (isset($_POST['submit'])) {
 </head>
 <body>
     <!-- Seu formulário -->
-    
+
     <div class="container-full">
         <header>Cadastre-se</header>
 
-    <form method="post" action="form2.php" enctype="multipart/form-data"> <!-- Adicionado enctype para suportar upload de arquivos -->
-        <div class="form first">
+        <form method="post" action="form2.php" enctype="multipart/form-data"> <!-- Adicionado enctype para suportar upload de arquivos -->
+            <div class="form first">
                 <div class="details personal">
                     <span class="title">Detalhes Pessoais</span>
 
@@ -165,12 +157,11 @@ if (isset($_POST['submit'])) {
                             <label>Nome</label>
                             <input type="text" name="nome" placeholder="Insira o seu primeiro nome" required>
                         </div>
-
                         <div class="input-field">
                             <label>Sobrenome</label>
                             <input type="text" name="sobrenome" placeholder="Insira o seu sobrenome" required>
                         </div>
-                        
+
                         <div class="input-field">
                             <label>Data de Nascimento</label>
                             <input type="date" name="data_nasc" placeholder="Insira a data de nascimento" required>
@@ -219,9 +210,9 @@ if (isset($_POST['submit'])) {
                             <label>Confirmar senha</label>
                             <input type="password" name="check-password" placeholder="Confirme a sua senha" required>
                         </div>
-                </div>
+                    </div>
 
-                <div class="details ID">
+                    <div class="details ID">
                     <span class="title">Informações do Endereço</span>
                     <div class="fields">
                         <div class="input-field">
@@ -252,66 +243,38 @@ if (isset($_POST['submit'])) {
                             <label>Estado</label>
                             <input type="text" name="uf" id="uf" placeholder="Insira o estado" required>
                         </div>
+                            <div class="input-field">
+                                <label>Selecionar foto de perfil</label>
+                                <input type="file" name="foto_perfil" accept="image/*"> <!-- Campo de envio de imagem -->
+                            </div>
 
-                        <div class="input-field">
-    <label>Foto de Perfil</label>
-    <input type="file" name="foto_perfil" accept="image/*"> <!-- Campo de envio de imagem -->
-</div>
+                            <br>
+                            <br>
+                            <div class="radio-users">
 
-<div class="input-field-upload">
-    <label>Selecionar Foto de Perfil</label>
-    <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*"> <!-- Campo de envio de imagem -->
-</div>
-
-
-                        <br>
-                        <br>
-                        <div class="radio-users">
-
-                          <!-- Checkbox para selecionar se é consumidor ou prestador de serviço -->
-                          <label for="tipo_usuario">Selecione o tipo de usuário:</label><br>
-                            <input type="radio" id="consumidor" name="tipo_usuario[]" value="consumidor">
-                            <label for="consumidor">Consumidor</label><br>
-                            <input type="radio" id="desenvolvedor" name="tipo_usuario[]" value="desenvolvedor">
-                            <label for="desenvolvedor">Desenvolvedor</label><br><br>
+                                <!-- Checkbox para selecionar se é consumidor ou prestador de serviço -->
+                                <label for="tipo_usuario">Selecione o tipo de usuário:</label><br>
+                                <input type="radio" id="consumidor" name="tipo_usuario[]" value="consumidor">
+                                <label for="consumidor">Consumidor</label><br>
+                                <input type="radio" id="desenvolvedor" name="tipo_usuario[]" value="desenvolvedor">
+                                <label for="desenvolvedor">Desenvolvedor</label><br><br>
+                            </div>
                         </div>
-                        
-                        <div class="">
-                            <a href="login.php" class="backBtn">
+                    </div>
+                    <div class="button-container">
+                        <a href="login.php" class="backBtn">
                             <i class="uil uil-navigator"></i>
                             <span class="btnText">Voltar</span>
-                            </a>
-                        </div>
-        <!-- Botão de envio -->
-        <div class="">
-            <button type="submit" name="submit" class="submit">
-            <span class="btnText">Enviar</span>
-            <i class="uil uil-navigator"></i>
-            </button>
-        </div>
-    </form>
+                        </a>
 
-    <!-- Elemento de alerta de conta criada com sucesso -->
-    <div class="content" id="colors">
-    <div class="container-alert" id="alerta_conta_criada" style="display: none;">
-        <div class="alert alert_success">
-            <div class="alert--icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="alert--content">
-                Conta criada com sucesso!
-            </div>
-            <div class="alert--close">
-                <i class="far fa-times-circle"></i>
-            </div>
-        </div>
-    </div>
-</div>
-
-            </div>
+                        <button type="submit" name="submit" class="submit">
+                            <span class="btnText">Enviar</span>
+                            <i class="uil uil-navigator"></i>
+                        </button>
         </form>
-    </div>
-</form>
+
+
+
     
     <!-- ===Script=== -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
