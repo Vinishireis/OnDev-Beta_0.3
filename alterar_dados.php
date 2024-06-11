@@ -49,7 +49,6 @@ if (isset($_SESSION['id'])) {
         // Recuperar os dados do formulário
         $nome = $_POST['nome'];
         $sobrenome = $_POST['sobrenome'];
-        $email = $_POST['email'];
         $ddd = $_POST['ddd'];
         $telefone = $_POST['telefone'];
         $cep = $_POST['cep'];
@@ -63,8 +62,7 @@ if (isset($_SESSION['id'])) {
         // Atualizar a consulta SQL com os campos padrão
         $sql_update = "UPDATE tb_cadastro_users SET 
                        nome = '$nome', 
-                       sobrenome = '$sobrenome', 
-                       email = '$email', 
+                       sobrenome = '$sobrenome',
                        ddd = '$ddd', 
                        telefone = '$telefone', 
                        cep = '$cep', 
@@ -207,7 +205,7 @@ $mysqli->close();
         </ul>
         <ul class="side-menu">
             <li>
-                <a href="#">
+                <a href="configuracoes_user.php">
                     <i class='bx bxs-cog'></i>
                     <span class="text">Configurações</span>
                 </a>
@@ -297,12 +295,6 @@ $mysqli->close();
 
                 <label for="sobrenome">Sobrenome:</label>
                 <input type="text" name="sobrenome" id="sobrenome" value="<?php echo $usuario['sobrenome']; ?>"><br><br>
-
-                <label for="email">Email:</label>
-                <input type="email" name="email" id="email" value="<?php echo $usuario['email']; ?>"><br><br>
-
-                <label for="password">Senha:</label>
-                <input type="password" name="password" id="password"><br><br>
 
                 <label for="ddd">DDD:</label>
                 <input type="text" name="ddd" id="ddd" value="<?php echo $usuario['ddd']; ?>"><br><br>

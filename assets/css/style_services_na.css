@@ -1,0 +1,99 @@
+.containerServices {
+    width: 90%;
+    margin: auto;
+    padding-top: 20px;
+}
+
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Distribui os cartões uniformemente */
+    gap: 20px; /* Espaçamento entre os cartões */
+}
+
+.card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    width: calc(33.333% - 20px); /* Ajuste a largura aqui */
+    box-sizing: border-box;
+    text-align: left;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+@media (max-width: 767.98px) {
+    .card {
+        width: calc(50% - 20px); /* Ajuste para duas colunas em telas menores */
+    }
+}
+
+@media (max-width: 567px) {
+    .card {
+        width: calc(100% - 20px); /* Ajuste para uma coluna em telas muito pequenas */
+    }
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.card h2 {
+    font-size: 1.5em;
+    margin: 10px 0;
+    color: #333;
+}
+
+.card h3 {
+    font-size: 1.2em;
+    margin: 10px 0;
+    color: #777;
+}
+
+.card p {
+    font-size: 1em;
+    margin: 10px 0;
+    color: #555;
+}
+
+.card .price {
+    font-size: 1.2em;
+    color: #4CAF50;
+    margin: 10px 0;
+}
+
+.card .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.card .btn:hover {
+    background-color: #45a049;
+}
+
+.developer {
+    margin-top: 10px;
+    color: #555;
+    font-size: 0.9em;
+}
+
+.developer a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.developer a:hover {
+    text-decoration: underline;
+}

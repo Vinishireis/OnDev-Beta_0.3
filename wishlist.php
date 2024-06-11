@@ -166,7 +166,7 @@ if (isset($_SESSION['id'])) {
 		</ul>
 		<ul class="side-menu">
 			<li>
-				<a href="#">
+				<a href="configuracoes_user.php">
 					<i class='bx bxs-cog' ></i>
 					<span class="text">Configurações</span>
 				</a>

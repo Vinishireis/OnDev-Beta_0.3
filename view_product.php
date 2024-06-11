@@ -5,7 +5,7 @@ session_start();
 // Verifica se o usuário está logado
 if (isset($_SESSION['id'])) {
     // Inclua o arquivo de configuração do banco de dados
-    include_once('login_new/config.php');
+    include_once('config.php');
 
     // Recupere o ID do usuário da sessão
     $user_id = $_SESSION['id'];
@@ -65,6 +65,19 @@ if ($row = mysqli_fetch_assoc($result)) {
     exit;
 }
 
+// Consulta SQL para recuperar as avaliações do serviço
+$query_avaliacoes = "
+    SELECT a.avaliacao, a.comentario, u.nome, u.foto_perfil
+    FROM tb_avaliacoes a
+    JOIN tb_cadastro_users u ON a.user_id = u.id
+    WHERE a.service_id = ?
+";
+$stmt_avaliacoes = mysqli_prepare($mysqli, $query_avaliacoes);
+mysqli_stmt_bind_param($stmt_avaliacoes, "i", $servico_id);
+mysqli_stmt_execute($stmt_avaliacoes);
+$result_avaliacoes = mysqli_stmt_get_result($stmt_avaliacoes);
+
+
 // Consulta SQL para recuperar os dados do desenvolvedor
 $query_developer = "SELECT nome, sobrenome, foto_perfil FROM tb_cadastro_developer WHERE id = ?";
 $stmt_developer = mysqli_prepare($mysqli, $query_developer);
@@ -81,6 +94,7 @@ if ($row_developer = mysqli_fetch_assoc($result_developer)) {
     echo "Desenvolvedor não encontrado.";
     exit;
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -123,6 +137,27 @@ if ($row_developer = mysqli_fetch_assoc($result_developer)) {
                 <button id="favorite-developer-btn" class="btn">Favoritar</button>
             </div>
         </div>
+    </div>
+
+    <div class="reviews">
+        <h2>Avaliações</h2>
+        <?php while ($row_avaliacao = mysqli_fetch_assoc($result_avaliacoes)) : ?>
+            <div class="review">
+                <div class="review-header">
+                    <img src="assets/img/users/<?= htmlspecialchars($row_avaliacao['foto_perfil']) ?>" alt="Foto de perfil" class="review-profile-pic">
+                    <span class="reviewer-name"><?= htmlspecialchars($row_avaliacao['nome']) ?></span>
+                </div>
+                <div class="review-body">
+                    <div class="rating">
+                        <?php for ($i = 0; $i < 5; $i++) : ?>
+                            <span class="star"><?= $i < $row_avaliacao['avaliacao'] ? '★' : '☆' ?></span>
+                        <?php endfor; ?>
+                    </div>
+                    <p class="comment"><?= nl2br(htmlspecialchars($row_avaliacao['comentario'])) ?></p>
+                </div>
+            </div>
+        <?php endwhile; ?>
+    </div>
     </div>
 
     <!-- Modal -->
@@ -169,7 +204,7 @@ if ($row_developer = mysqli_fetch_assoc($result_developer)) {
             </table>
             <form id="contratarForm" method="POST" action="enviar_email.php">
                 <label for="nome">Nome:</label><br>
-                <input type="text" id="nome" name="nome" required><br>
+                <input type="text" id="nome" name="nome" value="<?= isset($user_nome) ? htmlspecialchars($user_nome) : '' ?>" required readonly><br>
                 <label for="contato">Contato:</label><br>
                 <input type="text" id="contato" name="contato" required><br>
                 <label for="informacoes">Informações adicionais:</label><br>

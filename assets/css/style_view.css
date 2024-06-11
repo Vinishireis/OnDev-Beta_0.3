@@ -175,12 +175,13 @@ h1 {
 #contratarForm button:hover {
     background-color: #4cae4c;
 }
+
 .profile-dropdown {
     position: relative;
     width: fit-content;
-  }
-  
-  .profile-dropdown-btn {
+}
+
+.profile-dropdown-btn {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -190,43 +191,39 @@ h1 {
     width: 150px;
     border-radius: 50px;
     color: var(--black);
-    /* background-color: white;
-    box-shadow: var(--shadow); */
-  
     cursor: pointer;
     border: 1px solid var(--secondary);
-    transition: box-shadow 0.2s ease-in, background-color 0.2s ease-in,
-      border 0.3s;
-  }
-  
-  .profile-dropdown-btn:hover {
+    transition: box-shadow 0.2s ease-in, background-color 0.2s ease-in, border 0.3s;
+}
+
+.profile-dropdown-btn:hover {
     background-color: var(--secondary-light-2);
     box-shadow: var(--shadow);
-  }
-  
-  .profile-img {
+}
+
+.profile-img {
     position: relative;
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
     background: url(./assets/profile-pic.jpg);
     background-size: cover;
-  }
-  
-  .profile-img i {
+}
+
+.profile-img i {
     position: absolute;
     right: 0;
     bottom: 0.3rem;
     font-size: 0.5rem;
     color: var(--green);
-  }
-  
-  .profile-dropdown-btn span {
+}
+
+.profile-dropdown-btn span {
     margin: 0 0.5rem;
     margin-right: 0;
-  }
-  
-  .profile-dropdown-list {
+}
+
+.profile-dropdown-list {
     position: absolute;
     top: 68px;
     width: 220px;
@@ -237,31 +234,31 @@ h1 {
     overflow: hidden;
     box-shadow: var(--shadow);
     transition: max-height 0.5s;
-  }
-  
-  .profile-dropdown-list hr {
+}
+
+.profile-dropdown-list hr {
     border: 0.5px solid var(--green);
-  }
-  
-  .profile-dropdown-list.active {
+}
+
+.profile-dropdown-list.active {
     max-height: 500px;
-  }
-  
-  .profile-dropdown-list-item {
+}
+
+.profile-dropdown-list-item {
     padding: 0.5rem 0rem 0.5rem 1rem;
     transition: background-color 0.2s ease-in, padding-left 0.2s;
-  }
-  
-  .profile-dropdown-list-item a {
+}
+
+.profile-dropdown-list-item a {
     display: flex;
     align-items: center;
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--black);
-  }
-  
-  .profile-dropdown-list-item a i {
+}
+
+.profile-dropdown-list-item a i {
     margin-right: 0.8rem;
     font-size: 1.1rem;
     width: 2.3rem;
@@ -273,10 +270,59 @@ h1 {
     margin-right: 1rem;
     border-radius: 50%;
     transition: margin-right 0.3s;
-  }
-  
-  .profile-dropdown-list-item:hover {
+}
+
+.profile-dropdown-list-item:hover {
     padding-left: 1.5rem;
     background-color: var(--secondary-light);
-  }
-  
+}
+
+/* ESTILIZAÇÃO DA AVALIAÇÃO */
+.reviews {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.review {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+}
+
+.review-header .review-profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.review-header .reviewer-name {
+    font-weight: bold;
+}
+
+.review-body {
+    margin-left: 60px;
+}
+
+.rating {
+    font-size: 20px;
+    color: #ffc107;
+}
+
+.star {
+    margin-right: 5px;
+}
+
+.comment {
+    margin-top: 5px;
+}

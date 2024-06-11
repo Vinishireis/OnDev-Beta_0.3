@@ -1,36 +1,25 @@
 <?php
-// Certifique-se de que você tem a sessão iniciada
 session_start();
 
-// Verifica se o usuário está logado
 if (isset($_SESSION['id'])) {
-    // Inclua o arquivo de configuração do banco de dados
     include_once('config.php');
 
-    // Recupere o ID do usuário da sessão
     $id_usuario = $_SESSION['id'];
     $nome = $_SESSION['nome'];
 
-    // Consulta SQL para recuperar os dados do usuário, incluindo a foto de perfil
     $query = "SELECT id, foto_perfil FROM tb_cadastro_users WHERE id = $id_usuario";
     $result = mysqli_query($mysqli, $query);
 
-    // Verifica se a consulta foi bem-sucedida
     if ($result) {
-        // Extrai os dados da imagem do resultado da consulta
         $row = mysqli_fetch_assoc($result);
         $id = $row['id'];
         $foto_nome = $row['foto_perfil'];
-
-        // Define o caminho completo da imagem
         $caminho_imagem = "assets/img/users/$foto_nome";
     } else {
-        // Em caso de erro na consulta
         echo "Erro ao recuperar a foto de perfil do banco de dados.";
         exit;
     }
 
-    // Consulta para obter os serviços do usuário logado
     $query = "SELECT s.id, s.titulo, s.descricao, s.instrucao, s.categoria, s.valor, s.tempo, s.img, 
     d.nome AS nome_developer, d.sobrenome AS sobrenome_developer
     FROM tb_cad_servico_dev AS s
@@ -41,6 +30,46 @@ if (isset($_SESSION['id'])) {
     mysqli_stmt_bind_param($stmt, "i", $id_usuario);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
+
+    $query_contratados = "SELECT s.id, s.titulo AS titulo_servico, s.valor, s.tempo, sc.data_contratacao, 
+d.nome AS nome_desenvolvedor, d.sobrenome AS sobrenome_desenvolvedor, sc.status
+FROM tb_servicos_contratados AS sc
+INNER JOIN tb_cad_servico_dev AS s ON sc.service_id = s.id
+INNER JOIN tb_cadastro_developer AS d ON sc.developer_id = d.id
+WHERE sc.user_id = ?";
+    $stmt_contratados = mysqli_prepare($mysqli, $query_contratados);
+    mysqli_stmt_bind_param($stmt_contratados, "i", $id_usuario);
+    mysqli_stmt_execute($stmt_contratados);
+    $result_contratados = mysqli_stmt_get_result($stmt_contratados);
+
+    if (isset($_POST['serviceId']) && isset($_POST['avaliacao']) && isset($_POST['comentario'])) {
+        $serviceId = $_POST['serviceId'];
+        $avaliacao = $_POST['avaliacao'];
+        $comentario = $_POST['comentario'];
+        $userId = $_SESSION['id'];
+
+        $query_developer = "SELECT id_developer FROM tb_cad_servico_dev WHERE id = ?";
+        $stmt_developer = mysqli_prepare($mysqli, $query_developer);
+        mysqli_stmt_bind_param($stmt_developer, "i", $serviceId);
+        mysqli_stmt_execute($stmt_developer);
+        $result_developer = mysqli_stmt_get_result($stmt_developer);
+        $row_developer = mysqli_fetch_assoc($result_developer);
+        $developerId = $row_developer['id_developer'];
+
+        $query = "INSERT INTO tb_avaliacoes (service_id, user_id, developer_id, avaliacao, comentario) VALUES (?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($mysqli, $query);
+        mysqli_stmt_bind_param($stmt, "iiiss", $serviceId, $userId, $developerId, $avaliacao, $comentario);
+
+        if (mysqli_stmt_execute($stmt)) {
+            echo "Avaliação enviada com sucesso!";
+        } else {
+            echo "Erro ao enviar a avaliação.";
+        }
+
+        mysqli_stmt_close($stmt);
+    }
+
+    mysqli_close($mysqli);
 }
 ?>
 
@@ -122,6 +151,83 @@ if (isset($_SESSION['id'])) {
         a:hover {
             text-decoration: underline;
         }
+
+        /* COMEÇO DO MODAL*/
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button.avaliado {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* FÓRMULÁRIO DE AVALIAÇÕES*/
+
+        /* Criar as variaveis com as cores */
+
+        :root {
+            --amarelo: #ffcc00;
+            --cinza: #cccccc;
+        }
+
+        /* Não exebir o input radio */
+
+        .estrelas input[type=radio] {
+            display: none;
+        }
+
+        /* Criar as estrelas preenchidas de amarelo */
+        .estrelas label i.opcao.fa:before {
+            content: '\f005';
+            color: var(--amarelo);
+        }
+
+        /* Atribuir o cinza nas estrelas, quando selecionar a estrela o cinza */
+
+        .estrelas input[type=radio]:checked~label i.fa:before {
+            color: var(--cinza)
+        }
+
+
+        .estrela-preenchida {
+            color: var(--amarelo)
+        }
+
+        .estrela-vazia {
+            color: var(--cinza)
+        }
     </style>
 
 </head>
@@ -160,7 +266,7 @@ if (isset($_SESSION['id'])) {
                 </a>
             </li>
             <li>
-                <a href="alterar_dados.php">
+                <a href="alterar_dados_user.php">
                     <i class='bx bxs-doughnut-chart'></i>
                     <span class="text">Meu Perfil</span>
                 </a>
@@ -175,7 +281,7 @@ if (isset($_SESSION['id'])) {
         </ul>
         <ul class="side-menu">
             <li>
-                <a href="#">
+                <a href="configuracoes_user.php">
                     <i class='bx bxs-cog'></i>
                     <span class="text">Configurações</span>
                 </a>
@@ -248,69 +354,154 @@ if (isset($_SESSION['id'])) {
             <!-- LISTA DE SERVIÇOS -->
             <div class="container">
                 <h1>Lista de pedidos</h1>
-
                 <table>
                     <thead>
                         <tr>
-                            <th>Título</th>
-                            <th>Descrição</th>
-                            <th>Instrução</th>
-                            <th>Categoria</th>
-                            <th>Valor</th>
-                            <th>Tempo</th>
-                            <th>Imagem</th>
-                            <th>Desenvolvedor</th>
+                            <th>Nº Pedido</th>
+                            <th>Data de Contratação</th>
+                            <th>Título do Serviço</th>
+                            <th>Nome do Desenvolvedor</th>
+                            <th>Status</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        if (mysqli_num_rows($result) > 0) {
-                            while ($row = mysqli_fetch_assoc($result)) {
+                        if ($result_contratados && mysqli_num_rows($result_contratados) > 0) {
+                            while ($row = mysqli_fetch_assoc($result_contratados)) {
+                                // Formatando a data de contratação
+                                $data_contratacao_formatada = date('d/m/Y', strtotime($row['data_contratacao']));
                         ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($row['titulo']) ?></td>
-                                    <td><?= htmlspecialchars($row['descricao']) ?></td>
-                                    <td><?= htmlspecialchars($row['instrucao']) ?></td>
-                                    <td><?= htmlspecialchars($row['categoria']) ?></td>
-                                    <td>R$ <?= number_format($row['valor'], 2, ',', '.') ?></td>
-                                    <td><?= htmlspecialchars($row['tempo']) ?> dias</td>
-                                    <td><img src="<?= htmlspecialchars($row['img']) ?>" alt="Imagem do serviço"></td>
-                                    <td><?= htmlspecialchars($row['nome_developer'] . ' ' . $row['sobrenome_developer']) ?></td>
-                                    <td><a href="assets/php/remove_servico.php?id=<?= $row['id'] ?>">Remover Serviço</a></td>
+                                    <td><?= $row['id'] ?></td>
+                                    <td><?= $data_contratacao_formatada ?></td>
+                                    <td><?= $row['titulo_servico'] ?></td>
+                                    <td><?= $row['nome_desenvolvedor'] ?></td>
+                                    <td><?= $row['status'] ?></td>
+                                    <td>
+                                        <?php if ($row['status'] == 'concluído') { ?>
+                                            <button onclick="abrirModalAvaliacao(<?= $row['id'] ?>)">Avaliar</button>
+                                        <?php } else { ?>
+                                            <button onclick="removerServico(<?= $row['id'] ?>)">Remover Serviço</button>
+                                        <?php } ?>
+                                    </td>
                                 </tr>
                             <?php
                             }
                         } else {
                             ?>
                             <tr>
-                                <td colspan="9">Nenhum serviço favoritado.</td>
+                                <td colspan="6">Nenhum serviço contratado encontrado.</td>
                             </tr>
                         <?php } ?>
                     </tbody>
                 </table>
+
+
             </div>
+
+            <!-- Modal de Avaliação -->
+            <div id="modalAvaliacao" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="fecharModalAvaliacao()">&times;</span>
+                    <h2>Avaliar Serviço</h2>
+                    <form id="formAvaliacao">
+                        <input type="hidden" id="serviceId" name="serviceId">
+                        <div class="estrelas">
+                            <p>Selecione a quantidade de estrelas</p>
+                            <input type="radio" name="avaliacao" id="vazio" value="" checked>
+                            <label for="estrela_um"><i class="opcao fa"></i></label>
+                            <input type="radio" name="avaliacao" id="estrela_um" value="Péssimo">
+                            <label for="estrela_dois"><i class="opcao fa"></i></label>
+                            <input type="radio" name="avaliacao" id="estrela_dois" value="Ruim">
+                            <label for="estrela_tres"><i class="opcao fa"></i></label>
+                            <input type="radio" name="avaliacao" id="estrela_tres" value="Bom">
+                            <label for="estrela_quatro"><i class="opcao fa"></i></label>
+                            <input type="radio" name="avaliacao" id="estrela_quatro" value="Ótimo">
+                            <label for="estrela_cinco"><i class="opcao fa"></i></label>
+                            <input type="radio" name="avaliacao" id="estrela_cinco" value="Excelente">
+                        </div>
+                        <textarea name="comentario" id="comentario" rows="4" cols="50" placeholder="Digite o seu comentário..."></textarea>
+                        <br><br>
+                        <button type="button" onclick="enviarAvaliacao()">Enviar</button>
+                        <div id="mensagem"></div>
+                    </form>
+                </div>
+            </div>
+            <!-- Fim Modal de Avaliação -->
         </main>
 
         <script>
             function removerServico(id) {
                 if (confirm('Tem certeza de que deseja remover este serviço?')) {
                     var xhr = new XMLHttpRequest();
-                    xhr.open('GET', 'assets/php/remove_servico.php?id=' + id, true);
+                    xhr.open('POST', 'assets/php/remove_servico_user.php', true);
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                     xhr.onreadystatechange = function() {
-                        if (xhr.readyState === 4 && xhr.status === 200) {
-                            // Atualizar a tabela após remover o serviço
-                            atualizarTabelaServicos();
+                        if (xhr.readyState === 4) {
+                            console.log('Response:', xhr.responseText); // Verificar a resposta do servidor
+                            console.log('Status:', xhr.status); // Verificar o status da requisição
+                            if (xhr.status === 200) {
+                                var response = xhr.responseText;
+                                console.log('Response:', response); // Verificar a resposta do servidor
+                                if (response === 'success') {
+                                    // Atualizar a linha da tabela
+                                    var row = document.getElementById('row_' + id);
+                                    if (row) {
+                                        row.remove();
+                                    }
+                                } else {
+                                    alert('Erro ao cancelar o serviço: ' + response); // Exibir a mensagem de erro retornada pelo servidor
+                                }
+                            } else {
+                                alert('Erro na requisição. Status: ' + xhr.status); // Exibir o status da requisição HTTP
+                            }
                         }
                     };
-                    xhr.send();
+                    xhr.send('id=' + id);
                 }
             }
 
-            function atualizarTabelaServicos() {
-                // Atualize a tabela aqui após a remoção do serviço
-                location.reload(); // Isso irá recarregar a página para refletir as mudanças
+            /* COMEÇO MODAL */
+
+            function abrirModalAvaliacao(serviceId) {
+                document.getElementById('serviceId').value = serviceId;
+                document.getElementById('modalAvaliacao').style.display = 'block';
             }
+
+            function fecharModalAvaliacao() {
+                document.getElementById('modalAvaliacao').style.display = 'none';
+            }
+
+            function enviarAvaliacao() {
+                var serviceId = document.getElementById('serviceId').value;
+                var avaliacao = document.querySelector('input[name="avaliacao"]:checked').value;
+                var comentario = document.getElementById('comentario').value;
+                var mensagem = document.getElementById('mensagem');
+
+                if (!avaliacao || !comentario) {
+                    mensagem.innerHTML = '<p style="color: #f00;">Erro: Todos os campos são obrigatórios.</p>';
+                    return;
+                }
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'assets/php/avaliacao_process.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = xhr.responseText;
+                        mensagem.innerHTML = response.includes('Sucesso') ?
+                            '<p style="color: green;">Avaliação enviada com sucesso!</p>' :
+                            '<p style="color: #f00;">Erro ao enviar a avaliação.</p>';
+                        if (response.includes('Sucesso')) {
+                            fecharModalAvaliacao();
+                            atualizarTabelaServicos();
+                        }
+                    }
+                };
+                xhr.send('serviceId=' + serviceId + '&avaliacao=' + avaliacao + '&comentario=' + encodeURIComponent(comentario));
+            }
+            /* FIM MODAL */
         </script>
 
         <script src="assets/js/dashboard.js"></script>

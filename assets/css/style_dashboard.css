@@ -121,7 +121,7 @@ button:hover {
 }
 
 .profile {
-    flex: 1 1 calc(30% - 20px);
+    flex: 1 1 calc(100% - 20px); /* Adjusted for responsiveness */
 }
 
 .profile img {
@@ -137,7 +137,7 @@ button:hover {
 }
 
 .info {
-    flex: 1 1 calc(70% - 20px);
+    flex: 1 1 calc(100% - 20px); /* Adjusted for responsiveness */
 }
 
 .info h2 {
@@ -211,7 +211,6 @@ button:hover {
     display: block; /* Para colocar os ícones um em cima do outro */
 }
 
-
 .share-panel .share-icon img {
     width: 40px;
     height: 40px;
@@ -238,6 +237,7 @@ button:hover {
     background-color: #e0e0e0;
     border-radius: 4px;
 }
+
 .profile ul {
     list-style-type: none;
     padding: 0;

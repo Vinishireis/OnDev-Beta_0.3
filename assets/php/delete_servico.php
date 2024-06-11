@@ -10,7 +10,7 @@ if (!isset($_SESSION['id'])) {
 }
 
 // Inclua o arquivo de configuração do banco de dados
-include_once('../../login_new/config.php');
+include_once('../../config.php');
 
 // Recupere o ID do serviço a ser removido
 if (!isset($_GET['id'])) {

@@ -24,7 +24,7 @@ if ($mysqli->affected_rows) {
     $mail->addAddress($email);
     $mail->Subject = "Password Reset";
     $mail->Body = <<<END
-    Clique <a href="http://localhost/ondev-20-05-24/login_new/reset-password.php?token=$token&tipo_usuario=$tipo_usuario">aqui</a>
+    Clique <a href="http://localhost/ondev_3/reset-password.php?token=$token&tipo_usuario=$tipo_usuario">aqui</a>
     para redefinir sua senha.
     END;
 
