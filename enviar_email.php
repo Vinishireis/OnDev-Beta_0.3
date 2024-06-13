@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $mail->CharSet = 'UTF-8';
 
             // Definir a URL base
-            $base_url = "http://192.168.1.104/ondev-20-05-24-atualizado/";
+            $base_url = "http://localhost/OnDev-Beta_0.3/OnDev-Beta_0.3/";
 
             // Caminho completo da imagem do serviço
             $img_servico_path = $base_url . $img_servico;

@@ -121,7 +121,7 @@ if (isset($_SESSION['id'])) {
 
 	<!-- SIDEBAR -->
     <section id="sidebar">
-        <a href="index.html" class="brand">
+        <a href="index.php" class="brand">
             <img src="assets/img/logo-oficial.png">
         </a>    
 		<ul class="side-menu top">
@@ -154,14 +154,7 @@ if (isset($_SESSION['id'])) {
 					<i class='bx bxs-doughnut-chart' ></i>
 					<span class="text">Meu Perfil</span>
 				</a>
-			</li>
-			<li>
-				<a href="#">
-					<i class='bx bxs-message-dots' ></i>
-					<span class="text">Mensagens</span>
-				</a>
-			</li>
-			
+            </li>	
 		</ul>
 		<ul class="side-menu">
 			<li>

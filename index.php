@@ -9,39 +9,47 @@ session_start();
 if (isset($_SESSION['id'])) {
     // Atribui o valor da variável de sessão 'nome' à variável $nome
     $nome = $_SESSION['nome'];
-    
-    // Obtém o objeto mysqli da configuração
-    $mysqli = include 'config.php';
 
     // Prepara a consulta SQL para buscar o perfil do usuário
-    $id = $_SESSION['id']; // Armazena o valor em uma variável para segurança
-    $sql = "SELECT id, foto_perfil FROM tb_cadastro_users tb_cadastro_developer WHERE id = $id";
+    $id = (int)$_SESSION['id']; // Cast para inteiro para segurança
+    $sql = "
+        SELECT id, foto_perfil, nome FROM tb_cadastro_users WHERE id = ?
+        UNION ALL
+        SELECT id, foto_perfil, nome FROM tb_cadastro_developer WHERE id = ?
+    ";
 
-    // Executa a consulta SQL
-    $result = $mysqli->query($sql);
+    // Prepara a declaração
+    if ($stmt = $mysqli->prepare($sql)) {
+        // Liga variáveis aos parâmetros na declaração preparada
+        $stmt->bind_param('ii', $id, $id);
 
-    // Verifica se a consulta foi bem-sucedida
-    if ($row = $result->fetch_assoc()) {
-        $id = $row['id'];
-        $foto_nome = $row['foto_perfil'];
-        $caminho_imagem = "assets/img/users/$foto_nome";
+        // Executa a declaração
+        $stmt->execute();
+
+        // Obtém o resultado
+        $result = $stmt->get_result();
+
+        // Verifica se a consulta foi bem-sucedida
+        if ($row = $result->fetch_assoc()) {
+            $id = $row['id'];
+            $foto_nome = $row['foto_perfil'];
+            $nome = $row['nome'];
+            $caminho_imagem = "assets/img/users/$foto_nome";
+        } else {
+            echo "Erro ao recuperar os dados do banco de dados.";
+            exit;
+        }
+
+        // Fecha a declaração
+        $stmt->close();
     } else {
-        echo "Erro ao recuperar a foto de perfil do banco de dados.";
-        exit;
+        echo "Erro ao preparar a consulta SQL: " . $mysqli->error;
     }
+} else {
+    echo "Usuário não está logado.";
+exit;
 }
-    // Incluir os arquivos necessários
-    require 'config.php';
-    require 'Usuario.php';
-
-    // Criar uma instância da classe Usuario
-    $mysqli = include 'config.php';
-    $usuario = new Usuario($mysqli);
-
-    // Gerar o token QR
-    $qrtoken = $usuario->createQR(1);
-    ?>
-
+?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -69,96 +77,106 @@ if (isset($_SESSION['id'])) {
 </head>
 
 <body>
-    <!-- Begin mobile main menu -->
-    <nav class="mmm">
-        <div class="mmm-content">
-            <ul class="mmm-list">
-                <li><a href="index.php">Início</a></li>
-                <li><a href="about-us.php">Sobre Nós</a></li>
-                <li><a href="services.php">Serviços</a></li>
-                <li><a href="plans.php">Planos</a></li>
-                <li><a href="news.php">Novidades</a></li>
-                <li><a href="contacts.php">Contato</a></li>
-                <li>
-                    <a href="login.php" data-title="Login">
-                        <span>Login</span>
+<!-- Begin mobile main menu -->
+<nav class="mmm">
+    <div class="mmm-content">
+        <ul class="mmm-list">
+            <li><a href="index.php">Início</a></li>
+            <li><a href="about-us.php">Sobre Nós</a></li>
+            <li><a href="services.php">Serviços</a></li>
+            <li><a href="plans.php">Planos</a></li>
+            <li><a href="news.php">Novidades</a></li>
+            <li><a href="contacts.php">Contato</a></li>
+            <li>
+                <a href="login.php" data-title="Login">
+                    <span>Login</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- End mobile main menu -->
+
+<header class="header header-minimal">
+    <nav class="header-fixed">
+        <div class="container">
+            <div class="row flex-nowrap align-items-center justify-content-between">
+                <div class="col-auto header-fixed-col logo-wrapper">
+                    <a href="index.php" class="logo" title="OnDev">
+                        <img src="assets/img/logo-oficial.png" class="enlarged-logo" alt="OnDev">
                     </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <!-- End mobile main menu -->
+                </div>
 
-    <header class="header header-minimal">
-        <nav class="header-fixed">
-            <div class="container">
-                <div class="row flex-nowrap align-items-center justify-content-between">
-                    <div class="col-auto header-fixed-col logo-wrapper">
-                        <a href="index.php" class="logo" title="OnDev">
-                            <img src="assets/img/logo-oficial.png" class="enlarged-logo" alt="OnDev">
-                        </a>
+                <div class="col-auto col-xl col-static header-fixed-col d-none d-xl-block">
+                    <div class="row flex-nowrap align-items-center justify-content-end">
+                        <div class="col header-fixed-col d-none d-xl-block col-static">
+                            <!-- Begin main menu -->
+<nav class="main-mnu">
+    <ul class="main-mnu-list">
+        <li><a href="index.php" data-title="Início"><span>Início</span></a></li>
+        <li><a href="about-us.php" data-title="Sobre Nós"><span>Sobre Nós</span></a></li>
+        <li><a href="services.php" data-title="Serviços"><span>Serviços</span></a></li>
+        <li><a href="plans.php" data-title="Planos"><span>Planos</span></a></li>
+        <li><a href="news.php" data-title="Novidades"><span>Novidades</span></a></li>
+        <li><a href="contacts.php" data-title="Contato"><span>Contato</span></a></li>
+        <?php if (isset($_SESSION['id'])) : ?>
+            <li>
+                <div class="profile-dropdown">
+                    <div class="profile-dropdown-btn" onclick="toggleDesktopDropdown()">
+                        <div class="profile-img" style="background-image: url('<?php echo htmlspecialchars($caminho_imagem, ENT_QUOTES, 'UTF-8'); ?>');"></div>
+                        <span><?php echo htmlspecialchars($nome, ENT_QUOTES, 'UTF-8'); ?> <i class="fa-solid fa-angle-down"></i></span>
                     </div>
+                    <ul class="profile-dropdown-list">
+                        <li class="profile-dropdown-list-item">
+                            <a href="<?php echo ($tipo_usuario === 'developer') ? 'alterar_dados_dev.php' : 'alterar_dados.php'; ?>">
+                                <i class="fa-regular fa-user"></i> Editar Perfil
+                            </a>
+                        </li>
+                        <li class="profile-dropdown-list-item">
+                            <a href="<?php echo ($tipo_usuario === 'developer') ? 'config_developer.php' : 'configuracoes_user.php'; ?>">
+                                <i class="fa-solid fa-sliders"></i> Configurações
+                            </a>
+                        </li>
+                        <li class="profile-dropdown-list-item">
+                            <a href="generate.php" onclick="openModal(event)">
+                                <i class="fa fa-qrcode"></i> Login via QR Code
+                            </a>
+                        </li>
+                        <li class="profile-dropdown-list-item">
+                            <a href="contacts.php">
+                                <i class="fa-regular fa-circle-question"></i> Ajuda e Suporte
+                            </a>
+                        </li>
+                        <hr />
+                        <li class="profile-dropdown-list-item">
+                            <a href="logout.php">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        <?php else : ?>
+            <li><a href="login.php" data-title="Login"><span>Login</span></a></li>
+        <?php endif; ?>
+    </ul>
+</nav>
+<!-- End main menu -->
 
-                    <div class="col-auto col-xl col-static header-fixed-col d-none d-xl-block">
-                        <div class="row flex-nowrap align-items-center justify-content-end">
-                            <div class="col header-fixed-col d-none d-xl-block col-static">
 
-                                <!-- Begin main menu -->
-                                <nav class="main-mnu">
-                                    <ul class="main-mnu-list">
-                                        <li><a href="index.php" data-title="Início"><span>Início</span></a></li>
-                                        <li><a href="about-us.php" data-title="Sobre Nós"><span>Sobre Nós</span></a></li>
-                                        <li><a href="services.php" data-title="Serviços"><span>Serviços</span></a></li>
-                                        <li><a href="plans.php" data-title="Planos"><span>Planos</span></a></li>
-                                        <li><a href="news.php" data-title="Novidades"><span>Novidades</span></a></li>
-                                        <li><a href="contacts.php" data-title="Contato"><span>Contato</span></a></li>
-                                        <?php if (isset($_SESSION['id'])) : ?>
-                                            <li>
-                                                <div class="profile-dropdown">
-                                                    <div onclick="toggle()" class="profile-dropdown-btn">
-                                                        <div class="profile-img" style="background-image: url('<?php echo $caminho_imagem; ?>');"></div>
-                                                        <span><?php echo $nome; ?> <i class="fa-solid fa-angle-down"></i></span>
-                                                    </div>
-                                                    <ul class="profile-dropdown-list">
-                                                        <li class="profile-dropdown-list-item"><a href="alterar_dados.php"><i class="fa-regular fa-user"></i> Editar Perfil</a></li>
-                                                        <li class="profile-dropdown-list-item"><a href="#"><i class="fa-solid fa-sliders"></i> Configurações</a></li>
-                                                        <li class="profile-dropdown-list-item"><a href="generate.php" onclick="openModal(event)"><i class="fa fa-qrcode"></i> Login via QR Code</a></li>
-                                                        <li class="profile-dropdown-list-item"><a href="./contacts.php"><i class="fa-regular fa-circle-question"></i> Ajuda e Suporte</a></li>
-                                                        <hr />
-                                                        <li class="profile-dropdown-list-item"><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</a></li>
-                                                    </ul>
-                                                </div>
-                                            </li>
-                                        <?php else : ?>
-                                            <li><a href="login.php" data-title="Login"><span>Login</span></a></li>
-                                        <?php endif; ?>
-                                    </ul>
-                                </nav>
-                                <!-- End main menu -->
-
-                                <!-- Modal -->
-							<div id="qrCodeModal" class="modal">
-    							<div class="modal-content">
-									<p>Scaneie o QR Code para fazer Login</p>
-        							<span class="close" onclick="closeModal()">&times;</span>
-        							<iframe src="generate.php" frameborder="0" style="width:100%; height:400px;"></iframe>
-    							</div>
-							</div>
-
-                            <div class="col-auto d-block d-xl-none header-fixed-col">
-                                <div class="main-mnu-btn">
-                                    <span class="bar bar-1"></span>
-                                    <span class="bar bar-2"></span>
-                                    <span class="bar bar-3"></span>
-                                    <span class="bar bar-4"></span>
-                                </div>
-                            </div>
-                        </div>
+                <div class="col-auto d-block d-xl-none header-fixed-col">
+                    <div class="main-mnu-btn">
+                        <span class="bar bar-1"></span>
+                        <span class="bar bar-2"></span>
+                        <span class="bar bar-3"></span>
+                        <span class="bar bar-4"></span>
                     </div>
                 </div>
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
+</header>
+
 
 	<div class="section-bgc intro">
 		<div class="intro-item intro-item-type-1" style="background-image: url('assets/img/intro-img1.jpg');">

@@ -121,96 +121,68 @@ if (isset($_SESSION['id'])) {
                                 <div class="row flex-nowrap align-items-center justify-content-end">
                                     <div class="col header-fixed-col d-none d-xl-block col-static">
 
-                                        <!-- Begin main menu -->
-                                        <nav class="main-mnu">
-                                            <ul class="main-mnu-list">
-                                                <li>
-                                                    <a href="index.php" data-title="Início">
-                                                        <span>Início</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="about-us.php" data-title="Sobre Nós">
-                                                        <span>Sobre Nós</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="services.php" data-title="Serviços">
-                                                        <span>Serviços</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="plans.php" data-title="Planos">
-                                                        <span>Planos</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="news.php" data-title="Novidades">
-                                                        <span>Novidades</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="contacts.php" data-title="Contato">
-                                                        <span>Contato</span>
-                                                    </a>
-                                                </li>
-                                                <?php if (isset($_SESSION['id'])) : ?>
-                                                    <!-- Se o usuário estiver logado, exibe o nome do usuário e o botão de logout -->
-                                                    <li>
-                                                        <div class="profile-dropdown">
-                                                            <div onclick="toggle()" class="profile-dropdown-btn">
-                                                                <div class="profile-img" style="background-image: url('<?php echo $caminho_imagem; ?>');"></div>
-                                                                <span><?php echo $nome; ?> <i class="fa-solid fa-angle-down"></i></span>
-                                                            </div>
-                                                            <ul class="profile-dropdown-list">
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="alterar_dados.php">
-                                                                        <i class="fa-regular fa-user"></i> Editar Perfil
-                                                                    </a>
-                                                                </li>
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="#">
-                                                                        <i class="fa-regular fa-envelope"></i> Mensagens
-                                                                    </a>
-                                                                </li>
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="dashboard.php">
-                                                                        <i class="fa-solid fa-chart-line"></i> Dashboard
-                                                                    </a>
-                                                                </li>
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="#">
-                                                                        <i class="fa-solid fa-sliders"></i> Configurações
-                                                                    </a>
-                                                                </li>
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="./contacts.php">
-                                                                        <i class="fa-regular fa-circle-question"></i> Ajuda e Suporte
-                                                                    </a>
-                                                                </li>
-                                                                <hr />
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="logout.php">
-                                                                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </li>
-                                                <?php else : ?>
-                                                    <!-- Se o usuário não estiver logado, exibe o link de login -->
-                                                    <li>
-                                                        <a href="login.php" data-title="Login">
-                                                            <span>Login</span>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                            </ul>
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End main menu -->
+                                        
+                                 <!-- Begin main menu -->
+    <nav class="main-mnu">
+        <ul class="main-mnu-list">
+            <li><a href="index.php" data-title="Início"><span>Início</span></a></li>
+            <li><a href="about-us.php" data-title="Sobre Nós"><span>Sobre Nós</span></a></li>
+            <li><a href="services.php" data-title="Serviços"><span>Serviços</span></a></li>
+            <li><a href="plans.php" data-title="Planos"><span>Planos</span></a></li>
+            <li><a href="news.php" data-title="Novidades"><span>Novidades</span></a></li>
+            <li><a href="contacts.php" data-title="Contato"><span>Contato</span></a></li>
+            <?php if (isset($_SESSION['id'])) : ?>
+                <li>
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-btn" onclick="toggleDesktopDropdown()">
+                            <div class="profile-img" style="background-image: url('<?php echo htmlspecialchars($caminho_imagem, ENT_QUOTES, 'UTF-8'); ?>');"></div>
+                            <span><?php echo htmlspecialchars($nome, ENT_QUOTES, 'UTF-8'); ?> <i class="fa-solid fa-angle-down"></i></span>
+                        </div>
+                        <ul class="profile-dropdown-list">
+                            <li class="profile-dropdown-list-item">
+                                <a href="<?php echo ($tipo_usuario === 'developer') ? 'alterar_dados_dev.php' : 'alterar_dados.php'; ?>">
+                                    <i class="fa-regular fa-user"></i> Editar Perfil
+                                </a>
+                            </li>
+                            <li class="profile-dropdown-list-item">
+                                <a href="<?php echo ($tipo_usuario === 'developer') ? 'config_developer.php' : 'configuracoes_user.php'; ?>">
+                                    <i class="fa-solid fa-sliders"></i> Configurações
+                                </a>
+                            </li>
+                            <li class="profile-dropdown-list-item">
+                                <a href="generate.php" onclick="openModal(event)">
+                                    <i class="fa fa-qrcode"></i> Login via QR Code
+                                </a>
+                            </li>
+                            <li class="profile-dropdown-list-item">
+                                <a href="contacts.php">
+                                    <i class="fa-regular fa-circle-question"></i> Ajuda e Suporte
+                                </a>
+                            </li>
+                            <hr />
+                            <li class="profile-dropdown-list-item">
+                                <a href="logout.php">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            <?php else : ?>
+                <li><a href="login.php" data-title="Login"><span>Login</span></a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+    <!-- End main menu -->
+
+    <!-- Modal -->
+    <div id="qrCodeModal" class="modal">
+        <div class="modal-content">
+            <p>Scaneie o QR Code para fazer Login</p>
+            <span class="close" onclick="closeModal()">&times;</span>
+            <iframe src="generate.php" frameborder="0" style="width:100%; height:400px;"></iframe>
+        </div>
+    </div>
                             <div class="col-auto d-block d-xl-none header-fixed-col">
                                 <div class="main-mnu-btn">
                                     <span class="bar bar-1"></span>
@@ -286,7 +258,7 @@ if (isset($_SESSION['id'])) {
                             </div>
                         </div>
                         <div class="col-xl-8 col-md-7 content-item">
-                            <form action="#!" method="post" class="form-submission contact-form contact-form-padding" novalidate>
+                            <form action="/enviar.contato.php" method="post" class="form-submission contact-form contact-form-padding" novalidate>
                                 <input type="hidden" name="Subject" value="Formulário de Contato">
                                 <div class="row gutters-default">
                                     <div class="col-12">
@@ -295,25 +267,25 @@ if (isset($_SESSION['id'])) {
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="form-field">
                                             <label for="contact-name" class="form-field-label">Nome Completo</label>
-                                            <input type="text" class="form-field-input" name="Name" value="" autocomplete="off" id="contact-name" required data-pristine-required-message="Este campo é obrigatório.">
+                                            <input type="text" class="form-field-input" name="nome" value="" autocomplete="off" id="contact-name" required data-pristine-required-message="Este campo é obrigatório.">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="form-field">
                                             <label for="contact-phone" class="form-field-label">Número de Telefone</label>
-                                            <input type="tel" class="form-field-input mask-phone" name="Phone" value="" autocomplete="off" id="contact-phone" required data-pristine-required-message="Este campo é obrigatório.">
+                                            <input type="tel" class="form-field-input mask-phone" name="telefone" value="" autocomplete="off" id="contact-phone" required data-pristine-required-message="Este campo é obrigatório.">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-12">
                                         <div class="form-field">
                                             <label for="contact-email" class="form-field-label">Endereço de Email</label>
-                                            <input type="email" class="form-field-input" name="Email" value="" autocomplete="off" id="contact-email" required data-pristine-required-message="Este campo é obrigatório." data-pristine-email-message="Por favor, insira um endereço de email válido.">
+                                            <input type="email" class="form-field-input" name="email" value="" autocomplete="off" id="contact-email" required data-pristine-required-message="Este campo é obrigatório." data-pristine-email-message="Por favor, insira um endereço de email válido.">
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="form-field">
                                             <label for="contact-message" class="form-field-label">Sua Mensagem</label>
-                                            <textarea name="Message" class="form-field-input" id="contact-message" cols="30" rows="6"></textarea>
+                                            <textarea name="mensagem" class="form-field-input" id="contact-message" cols="30" rows="6"></textarea>
                                         </div>
                                         <div class="form-btn">
                                             <button type="submit" class="btn btn-w240 ripple"><span>Enviar Mensagem</span></button>
@@ -419,6 +391,8 @@ if (isset($_SESSION['id'])) {
     <script src="assets/libs/pristine/pristine.min.js"></script>
     <script src="assets/js/custom.js"></script>
     <script src="assets/js/forms.js"></script>
+    <script src="assets/js/script.js"></script>
+	<script src="qrcode.min.js"></script>
 
 </body>
 

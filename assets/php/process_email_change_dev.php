@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['id'])) {
 
     if (filter_var($novo_email, FILTER_VALIDATE_EMAIL)) {
         // Verificar se o e-mail já está em uso
-        $sql_check = "SELECT id FROM tb_cadastro_users WHERE email = ?";
+        $sql_check = "SELECT id FROM tb_cadastro_developer WHERE email = ?";
         $stmt_check = $mysqli->prepare($sql_check);
         $stmt_check->bind_param("s", $novo_email);
         $stmt_check->execute();
@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['id'])) {
         if ($stmt_check->num_rows > 0) {
             $response = ['status' => 'error', 'message' => 'E-mail já está em uso.'];
         } else {
-            $sql = "UPDATE tb_cadastro_users SET email = ? WHERE id = ?";
+            $sql = "UPDATE tb_cadastro_developer SET email = ? WHERE id = ?";
             $stmt = $mysqli->prepare($sql);
             $stmt->bind_param("si", $novo_email, $id_usuario);
 

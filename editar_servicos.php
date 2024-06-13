@@ -7,7 +7,7 @@ if (!isset($_SESSION['id'])) {
     exit;
 }
 
-include_once('login_new/config.php');
+include_once('config.php');
 
 // Recupere o ID do usuário da sessão
 $id_usuario = $_SESSION['id'];
@@ -195,6 +195,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 					<span class="text">Início</span>
 				</a>
 			</li>
+            <li>
+                <a href="callings_dev.php">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Solicitações</span>
+                </a>
+            </li>
 			<li class="active">
 				<a href="dash_servicos.php">
 					<i class='bx bxs-shopping-bag-alt' ></i>
@@ -208,33 +214,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				</a>
 			</li>
 			<li>
-				<a href="alterar_dados.php">
+				<a href="alterar_dados_dev.php">
 					<i class='bx bxs-doughnut-chart' ></i>
 					<span class="text">Meus Dados</span>
 				</a>
 			</li>
+			<!-- 
 			<li>
 				<a href="#">
 					<i class='bx bxs-message-dots' ></i>
 					<span class="text">Mensagens</span>
 				</a>
-			</li>
+			</li> 
 			<li>
 				<a href="#">
 					<i class='bx bxs-group' ></i>
 					<span class="text">Equipe</span>
 				</a>
 			</li>
+			-->
 		</ul>
 		<ul class="side-menu">
 			<li>
-				<a href="#">
+				<a href="config_developer.php">
 					<i class='bx bxs-cog' ></i>
 					<span class="text">Configurações</span>
 				</a>
 			</li>
 			<li>
-				<a href="#" class="logout">
+				<a href="logout.php" class="logout">
 					<i class='bx bxs-log-out-circle' ></i>
 					<span class="text">Logout</span>
 				</a>

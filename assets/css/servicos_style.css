@@ -1,0 +1,144 @@
+:root {
+    --primary-color: #428bca;
+    --secondary-color: #eeeeee;
+    --text-color: #000;
+    --background-color: #fff;
+}
+
+[data-theme="dark"] {
+    --primary-color: #1a73e8;
+    --secondary-color: #444;
+    --text-color: #fff;
+    --background-color: #333;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.glyphicon {
+    margin-right: 5px;
+}
+
+.thumbnail {
+    margin-bottom: 20px;
+    padding: 0px;
+    border-radius: 0px;
+    background-color: var(--background-color);
+}
+
+.item.list-group-item {
+    float: none;
+    width: 100%;
+    background-color: var(--background-color);
+    margin-bottom: 10px;
+    border: 1px solid var(--secondary-color);
+}
+
+.item.list-group-item:nth-of-type(odd):hover,
+.item.list-group-item:hover {
+    background: var(--primary-color);
+    color: var(--text-color);
+}
+
+.item.list-group-item .list-group-image {
+    margin-right: 10px;
+    max-width: 400px;
+    width: 100%;
+    height: auto;
+}
+
+.item.list-group-item .thumbnail {
+    margin-bottom: 0px;
+}
+
+.item.list-group-item .caption {
+    padding: 9px 9px 0px 9px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.item.list-group-item:nth-of-type(odd) {
+    background: var(--secondary-color);
+}
+
+.item.list-group-item:before,
+.item.list-group-item:after {
+    display: table;
+    content: " ";
+}
+
+.item.list-group-item img {
+    float: left;
+}
+
+.item.list-group-item:after {
+    clear: both;
+}
+
+.list-group-item-text {
+    margin: 0 0 11px;
+}
+
+.caption .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.caption .row > div {
+    flex: 1 1 auto;
+    margin: 5px 0;
+}
+
+.caption .row > .col-md-6 {
+    flex: 0 0 100%;
+}
+
+.caption .btn {
+    width: 100%;
+    text-align: center;
+}
+
+.item {
+    width: 300px; /* Define a largura fixa de 300px */
+    margin-bottom: 20px; /* Adiciona margem inferior para espaçamento */
+}
+.thumbnail {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+.list-group-image {
+    width: 100%;
+    height: auto;
+}
+.caption {
+    flex-grow: 1;
+}
+.lead {
+    font-size: 18px;
+    font-weight: bold;
+}
+.btn-group .btn {
+    margin-right: 5px;
+}
+.developer {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+
+@media (min-width: 576px) {
+    .caption .row > .col-md-6 {
+        flex: 0 0 48%;
+    }
+
+    .caption .btn {
+        width: auto;
+    }
+}

@@ -271,14 +271,7 @@ WHERE sc.user_id = ?";
                     <span class="text">Meu Perfil</span>
                 </a>
             </li>
-            <li>
-                <a href="#">
-                    <i class='bx bxs-message-dots'></i>
-                    <span class="text">Mensagens</span>
-                </a>
-            </li>
-
-        </ul>
+         </ul>
         <ul class="side-menu">
             <li>
                 <a href="configuracoes_user.php">

@@ -89,108 +89,61 @@ if (isset($_SESSION['id'])) {
 
    <!--=============== CSS ===============-->
    <link rel="stylesheet" href="assets/css/dashboard_style.css">
+   <link rel="stylesheet" href="assets/css/dashviewserv_style.css">
 
    <title>OnDev Dashboard</title>
-   <style> 
-    .container {
-        max-width: 2000px;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #F9F9F9;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    /* Estilos específicos para o formulário */
-    form {
-        display: flex;
-        flex-direction: column;
-    }
-    label {
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-    input, select {
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-    }
-    textarea {
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-        resize: vertical;
-    }
-    button {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 3px;
-        cursor: pointer;
-    }
-    .container h1 {
-        text-align: center;
-    }
-</style>
 </head>
 <body>
 
 
 	<!-- SIDEBAR -->
-    <section id="sidebar">
-        <a href="index.php" class="brand">
-            <img src="assets/img/logo-oficial.png">
-        </a>    
+	<section id="sidebar">
+		<a href="index.php" class="brand">
+			<img src="assets/img/logo-oficial.png">
+		</a>
 		<ul class="side-menu top">
-			<li>
-				<a href="dashboard.php">
-					<i class='bx bxs-dashboard' ></i>
-					<span class="text">Início</span>
+			<li class="active">
+				<a href="#">
+					<i class='bx bxs-dashboard'></i>
+					<span class="text">Inicio</span>
 				</a>
 			</li>
 			<li>
-				<a href="dash_servicos.php">
-					<i class='bx bxs-shopping-bag-alt' ></i>
-					<span class="text">Criar Serviços</span>
+				<a href="myrequests.php">
+					<i class='bx bxs-shopping-bag-alt'></i>
+					<span class="text">Meus Pedidos</span>
 				</a>
 			</li>
-            <li class="active">
-				<a href="dashviewserv.php">
-					<i class='bx bxs-shopping-bag-alt' ></i>
-					<span class="text">Meus Serviços</span>
+			<li>
+				<a href="favorite_developer.php">
+					<i class='bx bxs-group'></i>
+					<span class="text">Meus Desenvolvedores</span>
+				</a>
+			</li>
+			<li>
+				<a href="wishlist.php">
+					<i class='bx bxs-message-dots'></i>
+					<span class="text">Lista de desejos</span>
 				</a>
 			</li>
 			<li>
 				<a href="alterar_dados.php">
-					<i class='bx bxs-doughnut-chart' ></i>
-					<span class="text">Meus Dados</span>
+					<i class='bx bxs-doughnut-chart'></i>
+					<span class="text">Meu Perfil</span>
 				</a>
 			</li>
-			<li>
-				<a href="#">
-					<i class='bx bxs-message-dots' ></i>
-					<span class="text">Mensagens</span>
-				</a>
-			</li>
-			<li>
-				<a href="#">
-					<i class='bx bxs-group' ></i>
-					<span class="text">Equipe</span>
-				</a>
-			</li>
+
 		</ul>
 		<ul class="side-menu">
 			<li>
-				<a href="#">
-					<i class='bx bxs-cog' ></i>
+				<a href="configuracoes_user.php">
+					<i class='bx bxs-cog'></i>
 					<span class="text">Configurações</span>
 				</a>
 			</li>
 			<li>
-				<a href="#" class="logout">
-					<i class='bx bxs-log-out-circle' ></i>
+				<a href="logout.php" class="logout">
+					<i class='bx bxs-log-out-circle'></i>
 					<span class="text">Logout</span>
 				</a>
 			</li>
@@ -200,111 +153,100 @@ if (isset($_SESSION['id'])) {
 
 
 
-	<!-- CONTENT -->
-	<section id="content">
-		<!-- NAVBAR -->
-		<nav>
-			<i class='bx bx-menu' ></i>
-			<a href="#" class="nav-link">Categorias</a>
-			<form action="#">
-				<div class="form-input">
-					<input type="search" placeholder="Buscar...">
-					<button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
-				</div>
-			</form>
-			<input type="checkbox" id="switch-mode" hidden>
-			<label for="switch-mode" class="switch-mode"></label>
-			<a href="#" class="notification">
-				<i class='bx bxs-bell' ></i>
-				<span class="num">8</span>
-                <a href="#" class="profile">
-        <?php
-			// Verifica se o arquivo de imagem existe
-			if (file_exists($caminho_imagem)) {
-				// Exibe a imagem usando a tag <img>
-				echo "<img src='$caminho_imagem' alt='Foto de perfil'>";
-			} else {
-                // Se não houver foto de perfil, exibe uma imagem padrão
-                echo '<img src="caminho_da_imagem_padrao" alt="Foto de Perfil padrão">';
-            }
-        ?>
-    </a>
-		</nav>
-		<!-- NAVBAR -->
-
-		<!-- MAIN -->
-		<main>
-			<div class="head-title">
-				<div class="left">
-					<h1>Serviços</h1>
-					<ul class="breadcrumb">
-						<li>
-							<a href="dash_servicos.php">Serviços</a>
-						</li>
-						<li><i class='bx bx-chevron-right' ></i></li>
-						<li>
-							<a class="active" href="dashboard.php">Início</a>
-						</li>
-					</ul>
-				</div>
-				<a href="index.php" class="btn-download">
-					<i class='bx bx-home' ></i>
-					<span class="text">Voltar ao Início</span>
-				</a>
-			</div>
-            <!-- ALTERAR DADOS-->
-            </br>
-            <div class="container">
-                <h1>Visualizador de Serviços</h1>
-
-                <div class="container mt-5">
-        <h2 class="mb-3">Lista de Serviços</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Título</th>
-                    <th>Descrição</th>
-                    <th>Instrução</th>
-                    <th>Categoria</th>
-                    <th>Valor</th>
-                    <th>Tempo</th>
-                    <th>Imagem</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                    <tr>
-                        <td><?= htmlspecialchars($row['titulo']) ?></td>
-                        <td><?= htmlspecialchars($row['descricao']) ?></td>
-                        <td><?= htmlspecialchars($row['instrucao']) ?></td>
-                        <td><?= htmlspecialchars($row['categoria']) ?></td>
-                        <td><?= htmlspecialchars($row['valor']) ?></td>
-                        <td><?= htmlspecialchars($row['tempo']) ?></td>
-                        <td><img src="<?= htmlspecialchars($row['img']) ?>" alt="Imagem do serviço" style="max-width: 100px;"></td>
-                        <td><a href="editar_servicos.php?id=<?= $row['id'] ?>">Editar</a></td>
-                        <td><a href="editar_servicos.php?id=<?= $row['id'] ?>">Pausar</a></td>
-                        <td><a href="#" onclick="removerServico(<?= $row['id'] ?>)">Remover</a></td>
-                    </tr>
+ <!-- CONTENT -->
+ <section id="content">
+        <!-- NAVBAR -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <a href="#" class="nav-link">Categorias</a>
+            <form action="#">
+                <div class="form-input">
+                    <input type="search" placeholder="Buscar...">
+                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                </div>
+            </form>
+            <input type="checkbox" id="switch-mode" hidden>
+            <label for="switch-mode" class="switch-mode"></label>
+            <a href="#" class="notification">
+                <i class='bx bxs-bell'></i>
+                <span class="num">8</span>
+            </a>
+            <a href="#" class="profile">
                 <?php
-                }
+                    // Verifica se o arquivo de imagem existe
+                    if (file_exists($caminho_imagem)) {
+                        // Exibe a imagem usando a tag <img>
+                        echo "<img src='$caminho_imagem' alt='Foto de perfil'>";
+                    } else {
+                        // Se não houver foto de perfil, exibe uma imagem padrão
+                        echo '<img src="caminho_da_imagem_padrao" alt="Foto de Perfil padrão">';
+                    }
                 ?>
-            </tbody>
-        </table>
-    </div>
+            </a>
+        </nav>
+        <!-- NAVBAR -->
 
-
-
-
-                
-		</main>
-		<!-- MAIN -->
-	</section>
-	<!-- CONTENT -->
-</div>
-</div>
-
-	</main><!-- End main -->
+        <!-- MAIN -->
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <h1>Serviços</h1>
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="dash_servicos.php">Serviços</a>
+                        </li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li>
+                            <a class="active" href="dashboard.php">Início</a>
+                        </li>
+                    </ul>
+                </div>
+                <a href="index.php" class="btn-download">
+                    <i class='bx bx-home'></i>
+                    <span class="text">Voltar ao Início</span>
+                </a>
+            </div>
+            
+            <!-- ALTERAR DADOS -->
+            <br>
+            <div class="container-dashview">
+                <h1>Visualizador de Serviços</h1>
+                <h2 class="mb-3">Lista de Serviços</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Descrição</th>
+                            <th>Instrução</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                            <th>Tempo</th>
+                            <th>Imagem</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row['titulo']) ?></td>
+                                <td><?= htmlspecialchars($row['descricao']) ?></td>
+                                <td><?= htmlspecialchars($row['instrucao']) ?></td>
+                                <td><?= htmlspecialchars($row['categoria']) ?></td>
+                                <td><?= htmlspecialchars($row['valor']) ?></td>
+                                <td><?= htmlspecialchars($row['tempo']) ?></td>
+                                <td><img src="<?= htmlspecialchars($row['img']) ?>" alt="Imagem do serviço" style="max-width: 100px;"></td>
+                                <td><a href="editar_servicos.php?id=<?= $row['id'] ?>">Editar</a></td>
+                                <td><a href="editar_servicos.php?id=<?= $row['id'] ?>">Pausar</a></td>
+                                <td><a href="#" onclick="removerServico(<?= $row['id'] ?>)">Remover</a></td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        <!-- MAIN -->
+    </section>
+    <!-- CONTENT -->
     
     <script>
     function removerServico(id) {

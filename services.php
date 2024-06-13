@@ -5,30 +5,39 @@ include 'config.php';
 // Inicia a sessão
 session_start();
 
+// Definir valores padrão
+$caminho_imagem = 'assets/img/users/profile_padrao.png';
+$nome = 'Convidado';
+$tipo_usuario = null;
+
 // Verifica se o usuário está logado
 if (isset($_SESSION['id'])) {
-    // Atribui o valor da variável de sessão 'nome' à variável $nome
-    $nome = $_SESSION['nome'];
+	$id = (int)$_SESSION['id']; // Cast para inteiro para segurança
+	$sql = "
+        SELECT 'user' AS tipo, id, foto_perfil, nome FROM tb_cadastro_users WHERE id = ?
+        UNION ALL
+        SELECT 'developer' AS tipo, id, foto_perfil, nome FROM tb_cadastro_developer WHERE id = ?
+    ";
 
-    // Obtém o objeto mysqli da configuração
-    $mysqli = include 'config.php';
+	if ($stmt = $mysqli->prepare($sql)) {
+		$stmt->bind_param('ii', $id, $id);
+		$stmt->execute();
+		$result = $stmt->get_result();
 
-    // Prepara a consulta SQL para buscar o perfil do usuário
-    $id = $_SESSION['id']; // Armazena o valor em uma variável para segurança
-    $sql = "SELECT id, foto_perfil FROM tb_cadastro_users tb_cadastro_developer WHERE id = $id";
-
-    // Executa a consulta SQL
-    $result = $mysqli->query($sql);
-
-    // Verifica se a consulta foi bem-sucedida
-    if ($row = $result->fetch_assoc()) {
-        $id = $row['id'];
-        $foto_nome = $row['foto_perfil'];
-        $caminho_imagem = "assets/img/users/$foto_nome";
-    } else {
-        echo "Erro ao recuperar a foto de perfil do banco de dados.";
-        exit;
-    }
+		if ($row = $result->fetch_assoc()) {
+			$tipo_usuario = $row['tipo'];
+			$id = $row['id'];
+			$foto_nome = $row['foto_perfil'];
+			$nome = $row['nome'];
+			$caminho_imagem = "assets/img/users/$foto_nome";
+		} else {
+			echo "Erro ao recuperar os dados do banco de dados.";
+			exit;
+		}
+		$stmt->close();
+	} else {
+		echo "Erro ao preparar a consulta SQL: " . $mysqli->error;
+	}
 }
 ?>
 <!DOCTYPE html>
@@ -123,96 +132,68 @@ if (isset($_SESSION['id'])) {
                                 <div class="row flex-nowrap align-items-center justify-content-end">
                                     <div class="col header-fixed-col d-none d-xl-block col-static">
 
-                                        <!-- Begin main menu -->
-                                        <nav class="main-mnu">
-                                            <ul class="main-mnu-list">
-                                                <li>
-                                                    <a href="index.php" data-title="Início">
-                                                        <span>Início</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="about-us.php" data-title="Sobre Nós">
-                                                        <span>Sobre Nós</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="services.php" data-title="Serviços">
-                                                        <span>Serviços</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="plans.php" data-title="Planos">
-                                                        <span>Planos</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="news.php" data-title="Novidades">
-                                                        <span>Novidades</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="contacts.php" data-title="Contato">
-                                                        <span>Contato</span>
-                                                    </a>
-                                                </li>
-                                                <?php if (isset($_SESSION['id'])) : ?>
-                                                    <!-- Se o usuário estiver logado, exibe o nome do usuário e o botão de logout -->
-                                                    <li>
-                                                        <div class="profile-dropdown">
-                                                            <div onclick="toggle()" class="profile-dropdown-btn">
-                                                                <div class="profile-img" style="background-image: url('<?php echo $caminho_imagem; ?>');"></div>
-                                                                <span><?php echo $nome; ?> <i class="fa-solid fa-angle-down"></i></span>
-                                                            </div>
-                                                            <ul class="profile-dropdown-list">
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="alterar_dados.php">
-                                                                        <i class="fa-regular fa-user"></i> Editar Perfil
-                                                                    </a>
-                                                                </li>
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="#">
-                                                                        <i class="fa-regular fa-envelope"></i> Mensagens
-                                                                    </a>
-                                                                </li>
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="dashboard.php">
-                                                                        <i class="fa-solid fa-chart-line"></i> Dashboard
-                                                                    </a>
-                                                                </li>
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="#">
-                                                                        <i class="fa-solid fa-sliders"></i> Configurações
-                                                                    </a>
-                                                                </li>
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="./contacts.php">
-                                                                        <i class="fa-regular fa-circle-question"></i> Ajuda e Suporte
-                                                                    </a>
-                                                                </li>
-                                                                <hr />
-                                                                <li class="profile-dropdown-list-item">
-                                                                    <a href="logout.php">
-                                                                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </li>
-                                                <?php else : ?>
-                                                    <!-- Se o usuário não estiver logado, exibe o link de login -->
-                                                    <li>
-                                                        <a href="login.php" data-title="Login">
-                                                            <span>Login</span>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                            </ul>
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End main menu -->
+                                       
+                                 <!-- Begin main menu -->
+    <nav class="main-mnu">
+        <ul class="main-mnu-list">
+            <li><a href="index.php" data-title="Início"><span>Início</span></a></li>
+            <li><a href="about-us.php" data-title="Sobre Nós"><span>Sobre Nós</span></a></li>
+            <li><a href="services.php" data-title="Serviços"><span>Serviços</span></a></li>
+            <li><a href="plans.php" data-title="Planos"><span>Planos</span></a></li>
+            <li><a href="news.php" data-title="Novidades"><span>Novidades</span></a></li>
+            <li><a href="contacts.php" data-title="Contato"><span>Contato</span></a></li>
+            <?php if (isset($_SESSION['id'])) : ?>
+                <li>
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-btn" onclick="toggleDesktopDropdown()">
+                            <div class="profile-img" style="background-image: url('<?php echo htmlspecialchars($caminho_imagem, ENT_QUOTES, 'UTF-8'); ?>');"></div>
+                            <span><?php echo htmlspecialchars($nome, ENT_QUOTES, 'UTF-8'); ?> <i class="fa-solid fa-angle-down"></i></span>
+                        </div>
+                        <ul class="profile-dropdown-list">
+                            <li class="profile-dropdown-list-item">
+                                <a href="<?php echo ($tipo_usuario === 'developer') ? 'alterar_dados_dev.php' : 'alterar_dados.php'; ?>">
+                                    <i class="fa-regular fa-user"></i> Editar Perfil
+                                </a>
+                            </li>
+                            <li class="profile-dropdown-list-item">
+                                <a href="<?php echo ($tipo_usuario === 'developer') ? 'config_developer.php' : 'configuracoes_user.php'; ?>">
+                                    <i class="fa-solid fa-sliders"></i> Configurações
+                                </a>
+                            </li>
+                            <li class="profile-dropdown-list-item">
+                                <a href="generate.php" onclick="openModal(event)">
+                                    <i class="fa fa-qrcode"></i> Login via QR Code
+                                </a>
+                            </li>
+                            <li class="profile-dropdown-list-item">
+                                <a href="contacts.php">
+                                    <i class="fa-regular fa-circle-question"></i> Ajuda e Suporte
+                                </a>
+                            </li>
+                            <hr />
+                            <li class="profile-dropdown-list-item">
+                                <a href="logout.php">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            <?php else : ?>
+                <li><a href="login.php" data-title="Login"><span>Login</span></a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+    <!-- End main menu -->
+
+    <!-- Modal -->
+    <div id="qrCodeModal" class="modal">
+        <div class="modal-content">
+            <p>Scaneie o QR Code para fazer Login</p>
+            <span class="close" onclick="closeModal()">&times;</span>
+            <iframe src="generate.php" frameborder="0" style="width:100%; height:400px;"></iframe>
+        </div>
+    </div>
                             <div class="col-auto d-block d-xl-none header-fixed-col">
                                 <div class="main-mnu-btn">
                                     <span class="bar bar-1"></span>
@@ -241,7 +222,8 @@ if (isset($_SESSION['id'])) {
                         </div>
                     </div>
                 </div>
-            </nav><!-- End bread crumbs -->
+            </nav>
+        <!-- End bread crumbs -->
 
             <div class="section">
                 <div class="container">
@@ -417,7 +399,7 @@ if (isset($_SESSION['id'])) {
     <script src="assets/libs/pristine/pristine.min.js"></script>
     <script src="assets/js/custom.js"></script>
     <script src="assets/js/forms.js"></script>
-
+    <script src="assets/js/script.js"></script>
 </body>
 
 </html>

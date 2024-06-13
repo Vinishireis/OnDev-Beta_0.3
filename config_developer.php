@@ -12,7 +12,7 @@ if (isset($_SESSION['id'])) {
     $nome = $_SESSION['nome'];
 
     // Consulta SQL para recuperar os dados do usuário, incluindo a foto de perfil
-    $query = "SELECT id, foto_perfil FROM tb_cadastro_users WHERE id = $id_usuario";
+    $query = "SELECT id, foto_perfil FROM tb_cadastro_developer WHERE id = $id_usuario";
     $result = mysqli_query($mysqli, $query);
 
     // Verifica se a consulta foi bem-sucedida
@@ -31,7 +31,7 @@ if (isset($_SESSION['id'])) {
     }
 
     // Consulta SQL para buscar os dados do usuário
-    $sql = "SELECT * FROM tb_cadastro_users WHERE id = $id_usuario";
+    $sql = "SELECT * FROM tb_cadastro_developer WHERE id = $id_usuario";
 
     // Executar a consulta
     $resultado = $mysqli->query($sql);
@@ -51,7 +51,6 @@ if (isset($_SESSION['id'])) {
     }
 }
 ?>
-
 
 
 <!DOCTYPE html>
@@ -163,46 +162,53 @@ if (isset($_SESSION['id'])) {
         </a>
         <ul class="side-menu top">
             <li>
-                <a href="dashuser.php">
+                <a href="dashboard.php">
                     <i class='bx bxs-dashboard'></i>
                     <span class="text">Início</span>
                 </a>
             </li>
             <li>
-                <a href="myrequests.php">
+                <a href="callings_dev.php">
                     <i class='bx bxs-shopping-bag-alt'></i>
-                    <span class="text">Meus Pedidos</span>
+                    <span class="text">Solicitações</span>
                 </a>
             </li>
             <li>
-                <a href="favorite_developer.php">
-                    <i class='bx bxs-group'></i>
-                    <span class="text">Meus Desenvolvedores</span>
+                <a href="dash_servicos.php">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Criar Serviços</span>
                 </a>
             </li>
             <li>
-                <a href="wishlist.php">
-                    <i class='bx bxs-message-dots'></i>
-                    <span class="text">Lista de desejos</span>
+                <a href="dashviewserv.php">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Meus Serviços</span>
                 </a>
             </li>
             <li>
-                <a href="alterar_dados.php">
+                <a href="alterar_dados_dev.php">
                     <i class='bx bxs-doughnut-chart'></i>
-                    <span class="text">Meu Perfil</span>
+                    <span class="text">Meus Dados</span>
                 </a>
             </li>
+            <!--
             <li>
-                <a href="#">
-                    <i class='bx bxs-message-dots'></i>
-                    <span class="text">Mensagens</span>
-                </a>
-            </li>
-
+				<a href="#">
+					<i class='bx bxs-message-dots' ></i>
+					<span class="text">Mensagens</span>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<i class='bx bxs-group' ></i>
+					<span class="text">Equipe</span>
+				</a>
+			</li>
+            -->
         </ul>
         <ul class="side-menu">
             <li class="active">
-                <a href="#">
+                <a href="config_developer.php">
                     <i class='bx bxs-cog'></i>
                     <span class="text">Configurações</span>
                 </a>
@@ -258,7 +264,7 @@ if (isset($_SESSION['id'])) {
                     <h1>Configurações</h1>
                     <ul class="breadcrumb">
                         <li>
-                            <a href="alterar_dados_user.php">Informações</a>
+                            <a href="alterar_dados_dev.php">Informações</a>
                         </li>
                         <li><i class='bx bx-chevron-right'></i></li>
                         <li>
@@ -351,7 +357,7 @@ if (isset($_SESSION['id'])) {
             let form = event.target;
             let formData = new FormData(form);
 
-            fetch('assets/php/process_password_change.php', {
+            fetch('assets/php/process_password_change_dev.php', {
                     method: 'POST',
                     body: formData,
                 })
@@ -383,7 +389,7 @@ if (isset($_SESSION['id'])) {
             let form = event.target;
             let formData = new FormData(form);
 
-            fetch('assets/php/process_email_change.php', {
+            fetch('assets/php/process_email_change_dev.php', {
                     method: 'POST',
                     body: formData,
                 })

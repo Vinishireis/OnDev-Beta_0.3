@@ -9,105 +9,150 @@ if (isset($_SESSION['id'])) {
 
     // Recupere o ID do usuário da sessão
     $id_usuario = $_SESSION['id'];
-    $nome = $_SESSION['nome'];
 
-    // Consulta SQL para recuperar os dados do usuário, incluindo a foto de perfil
-    $query = "SELECT id, foto_perfil FROM tb_cadastro_users WHERE id = $id_usuario";
-    $result = mysqli_query($mysqli, $query);
+    // Verifica se o usuário está na tabela tb_cadastro_developer
+    $query_developer = "SELECT id FROM tb_cadastro_developer WHERE id = ?";
+    $stmt_developer = $mysqli->prepare($query_developer);
+    $stmt_developer->bind_param("i", $id_usuario);
+    $stmt_developer->execute();
+    $result_developer = $stmt_developer->get_result();
 
-    // Verifica se a consulta foi bem-sucedida
-    if ($result) {
-        // Extrai os dados da imagem do resultado da consulta
-        $row = mysqli_fetch_assoc($result);
-        $id = $row['id'];
-        $foto_nome = $row['foto_perfil'];
-        
-        // Define o caminho completo da imagem
-        $caminho_imagem = "assets/img/users/$foto_nome";
-    } else {
-        // Em caso de erro na consulta
-        echo "Erro ao recuperar a foto de perfil do banco de dados.";
+    // Verifica se o usuário está na tabela tb_cadastro_users
+    $query_user = "SELECT id FROM tb_cadastro_users WHERE id = ?";
+    $stmt_user = $mysqli->prepare($query_user);
+    $stmt_user->bind_param("i", $id_usuario);
+    $stmt_user->execute();
+    $result_user = $stmt_user->get_result();
+
+    // Verificar se o usuário não está na tabela tb_cadastro_developer mas está na tabela tb_cadastro_users
+    if ($result_user->num_rows > 0 && $result_developer->num_rows === 0) {
+        // Redirecionar para a página 404
+        header("Location: 404.php");
         exit;
     }
 
-    // Consulta SQL para buscar os dados do usuário
-    $sql = "SELECT * FROM tb_cadastro_users WHERE id = $id_usuario";
+    // Verifica se o usuário está na tabela tb_cadastro_developer
+    if ($result_developer->num_rows > 0) {
+        // Consulta SQL para recuperar os dados do usuário, incluindo a foto de perfil
+        $query = "SELECT id, foto_perfil FROM tb_cadastro_developer WHERE id = ?";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    // Executar a consulta
-    $resultado = $mysqli->query($sql);
-
-    // Verificar se a consulta foi bem-sucedida e se encontrou algum usuário
-    if ($resultado && $resultado->num_rows > 0) {
-        // Recuperar os dados do usuário
-        $usuario = $resultado->fetch_assoc();
-    } else {
-        echo "Erro ao buscar informações do usuário.";
-    }
-
-    // Verificar se o formulário foi submetido
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // Recuperar os dados do formulário
-        $nome = $_POST['nome'];
-        $sobrenome = $_POST['sobrenome'];
-        $ddd = $_POST['ddd'];
-        $telefone = $_POST['telefone'];
-        $cep = $_POST['cep'];
-        $rua = $_POST['rua'];
-        $numero = $_POST['numero'];
-        $complemento = $_POST['complemento'];
-        $bairro = $_POST['bairro'];
-        $cidade = $_POST['cidade'];
-        $estado = $_POST['estado'];
-
-        // Atualizar a consulta SQL com os campos padrão
-        $sql_update = "UPDATE tb_cadastro_users SET 
-                       nome = '$nome', 
-                       sobrenome = '$sobrenome',
-                       ddd = '$ddd', 
-                       telefone = '$telefone', 
-                       cep = '$cep', 
-                       rua = '$rua', 
-                       numero = '$numero', 
-                       complemento = '$complemento', 
-                       bairro = '$bairro', 
-                       cidade = '$cidade', 
-                       estado = '$estado'";
-
-        // Verificar se uma nova foto de perfil foi enviada
-        if (!empty($_FILES['foto_perfil']['name'])) {
-            // Caminho de destino da imagem
-            $foto_perfil = $_FILES['foto_perfil'];
-            $foto_nome = basename($foto_perfil['name']);
-            $foto_temp = $foto_perfil['tmp_name'];
+        // Verifica se a consulta foi bem-sucedida
+        if ($result->num_rows > 0) {
+            // Extrai os dados da imagem do resultado da consulta
+            $row = $result->fetch_assoc();
+            $id = $row['id'];
+            $foto_nome = $row['foto_perfil'];
+            
+            // Define o caminho completo da imagem
             $caminho_imagem = "assets/img/users/$foto_nome";
+        } else {
+            // Em caso de erro na consulta
+            echo "Erro ao recuperar a foto de perfil do banco de dados.";
+            exit;
+        }
 
-            // Mover a imagem para o diretório desejado
-            if (move_uploaded_file($foto_temp, $caminho_imagem)) {
-                // Atualizar a consulta SQL para incluir a nova foto
-                $sql_update .= ", foto_perfil = '$foto_nome'";
-            } else {
-                echo "Erro ao fazer upload da imagem.";
+        // Consulta SQL para buscar os dados do usuário
+        $sql = "SELECT * FROM tb_cadastro_developer WHERE id = ?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+
+        // Verificar se a consulta foi bem-sucedida e se encontrou algum usuário
+        if ($resultado->num_rows > 0) {
+            // Recuperar os dados do usuário
+            $usuario = $resultado->fetch_assoc();
+        } else {
+            echo "Erro ao buscar informações do usuário.";
+        }
+
+        // Verificar se o formulário foi submetido
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            // Recuperar os dados do formulário
+            $nome = $_POST['nome'];
+            $sobrenome = $_POST['sobrenome'];
+            $ddd = $_POST['ddd'];
+            $telefone = $_POST['telefone'];
+            $cep = $_POST['cep'];
+            $rua = $_POST['rua'];
+            $numero = $_POST['numero'];
+            $complemento = $_POST['complemento'];
+            $bairro = $_POST['bairro'];
+            $cidade = $_POST['cidade'];
+            $estado = $_POST['estado'];
+
+            // Atualizar a consulta SQL com os campos padrão
+            $sql_update = "UPDATE tb_cadastro_developer SET 
+                           nome = ?, 
+                           sobrenome = ?, 
+                           ddd = ?, 
+                           telefone = ?, 
+                           cep = ?, 
+                           rua = ?, 
+                           numero = ?, 
+                           complemento = ?, 
+                           bairro = ?, 
+                           cidade = ?, 
+                           estado = ?";
+            
+            $params = [$nome, $sobrenome, $ddd, $telefone, $cep, $rua, $numero, $complemento, $bairro, $cidade, $estado];
+            $types = "sssssssssss";
+
+            // Verificar se uma nova foto de perfil foi enviada
+            if (!empty($_FILES['foto_perfil']['name'])) {
+                // Caminho de destino da imagem
+                $foto_perfil = $_FILES['foto_perfil'];
+                $foto_nome = basename($foto_perfil['name']);
+                $foto_temp = $foto_perfil['tmp_name'];
+                $caminho_imagem = "assets/img/users/$foto_nome";
+
+                // Mover a imagem para o diretório desejado
+                if (move_uploaded_file($foto_temp, $caminho_imagem)) {
+                    // Atualizar a consulta SQL para incluir a nova foto
+                    $sql_update .= ", foto_perfil = ?";
+                    $params[] = $foto_nome;
+                    $types .= "s";
+                } else {
+                    echo "Erro ao fazer upload da imagem.";
+                    exit();
+                }
+            }
+
+            // Verificar se a senha foi fornecida e não está vazia
+            if (!empty($_POST['password'])) {
+                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                $sql_update .= ", password = ?";
+                $params[] = $password;
+                $types .= "s";
+            }
+
+            // Finalizar a consulta SQL com a cláusula WHERE
+            $sql_update .= " WHERE id = ?";
+            $params[] = $id_usuario;
+            $types .= "i";
+
+            // Executar a consulta de atualização
+            $stmt_update = $mysqli->prepare($sql_update);
+            if (!$stmt_update) {
+                echo "Erro ao preparar a consulta: " . $mysqli->error;
                 exit();
             }
-        }
 
-        // Verificar se a senha foi fornecida e não está vazia
-        if (!empty($_POST['password'])) {
-            $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-            $sql_update .= ", password = '$password'";
-        }
+            // Usar call_user_func_array para passar os parâmetros dinamicamente
+            $stmt_update->bind_param($types, ...$params);
 
-        // Finalizar a consulta SQL com a cláusula WHERE
-        $sql_update .= " WHERE id = $id_usuario";
-
-        // Executar a consulta de atualização
-        if ($mysqli->query($sql_update) === TRUE) {
-            echo "Dados atualizados com sucesso!";
-            // Redirecionar para a mesma página para exibir os dados atualizados
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit();
-        } else {
-            echo "Erro ao atualizar os dados: " . $mysqli->error;
+            if ($stmt_update->execute()) {
+                echo "Dados atualizados com sucesso!";
+                // Redirecionar para a mesma página para exibir os dados atualizados
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit();
+            } else {
+                echo "Erro ao atualizar os dados: " . $stmt_update->error;
+            }
         }
     }
 } else {
@@ -117,6 +162,9 @@ if (isset($_SESSION['id'])) {
 // Fechar a conexão com o banco de dados
 $mysqli->close();
 ?>
+
+
+
 
 
 <!DOCTYPE html>
@@ -164,47 +212,40 @@ $mysqli->close();
             <img src="assets/img/logo-oficial.png">
         </a>
         <ul class="side-menu top">
-            <li>
-                <a href="dashuser.php">
+        <li>
+                <a href="dashboard.php">
                     <i class='bx bxs-dashboard'></i>
                     <span class="text">Início</span>
                 </a>
             </li>
             <li>
-                <a href="myrequests.php">
+                <a href="callings_dev.php">
                     <i class='bx bxs-shopping-bag-alt'></i>
-                    <span class="text">Meus Pedidos</span>
+                    <span class="text">Solicitações</span>
                 </a>
             </li>
             <li>
-                <a href="favorite_developer.php">
-                    <i class='bx bxs-group'></i>
-                    <span class="text">Meus Desenvolvedores</span>
+                <a href="dash_servicos.php">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Criar Serviços</span>
                 </a>
             </li>
             <li>
-                <a href="wishlist.php">
-                    <i class='bx bxs-message-dots'></i>
-                    <span class="text">Lista de desejos</span>
+                <a href="dashviewserv.php">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Meus Serviços</span>
                 </a>
             </li>
             <li class="active">
-                <a href="alterar_dados.php">
+                <a href="alterar_dados_dev.php">
                     <i class='bx bxs-doughnut-chart'></i>
-                    <span class="text">Meu Perfil</span>
+                    <span class="text">Meus Dados</span>
                 </a>
             </li>
-            <li>
-                <a href="#">
-                    <i class='bx bxs-message-dots'></i>
-                    <span class="text">Mensagens</span>
-                </a>
-            </li>
-
         </ul>
         <ul class="side-menu">
             <li>
-                <a href="configuracoes_user.php">
+                <a href="config_developer.php">
                     <i class='bx bxs-cog'></i>
                     <span class="text">Configurações</span>
                 </a>

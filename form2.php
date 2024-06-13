@@ -80,7 +80,13 @@ if (isset($_POST['submit'])) {
             $complemento = $_POST['complemento'];
             $bairro = $_POST['bairro'];
             $cidade = $_POST['cidade'];
-            $estado = $_POST['estado'];
+            $estado = isset($_POST['estado']) ? $_POST['estado'] : null;
+
+            // Validação da data de nascimento
+            if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $data_nasc)) {
+                echo "Formato de data inválido.";
+                exit;
+            }
 
             // Trunca o telefone para garantir que tenha no máximo 15 caracteres
             if (strlen($telefone) > 15) {
@@ -100,6 +106,9 @@ if (isset($_POST['submit'])) {
 
                 // Verifica se a inserção foi bem-sucedida
                 if ($executed) {
+                    // Armazena o nome da imagem na sessão
+                    $_SESSION['foto_perfil'] = $nomeImagem;
+
                     // Redireciona para a página de login
                     header('Location: login.php');
                     exit; // Certifique-se de sair do script após o redirecionamento
@@ -113,6 +122,7 @@ if (isset($_POST['submit'])) {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">

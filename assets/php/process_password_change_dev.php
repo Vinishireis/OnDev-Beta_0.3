@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['id'])) {
     if ($nova_senha === $confirmacao_senha) {
         $hash_senha = password_hash($nova_senha, PASSWORD_DEFAULT);
 
-        $sql = "UPDATE tb_cadastro_users SET password = ? WHERE id = ?";
+        $sql = "UPDATE tb_cadastro_developer SET password = ? WHERE id = ?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("si", $hash_senha, $id_usuario);
 

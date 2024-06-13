@@ -85,69 +85,11 @@ if (isset($_SESSION['id'])) {
 
     <!--=============== CSS ===============-->
     <link rel="stylesheet" href="assets/css/dashboard_style.css">
-    <link rel="stylesheet" href="assets/css/alterar_dados_style.css">
+    <link rel="stylesheet" href="assets/css/configuracoes_user.css">
 
     <style>
         /* Estilos para os botões */
-        .btn-download {
-            background-color: #0467F1;
-            /* Azul */
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-
-        .btn-download:hover {
-            background-color: #1859B4;
-        }
-
-        /* Estilos para os modais */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 15px;
-            /* Bordas arredondadas */
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            /* Sombra suave */
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-        }
+        
     </style>
 
     <title>OnDev Dashboard</title>
@@ -192,12 +134,7 @@ if (isset($_SESSION['id'])) {
                     <span class="text">Meu Perfil</span>
                 </a>
             </li>
-            <li>
-                <a href="#">
-                    <i class='bx bxs-message-dots'></i>
-                    <span class="text">Mensagens</span>
-                </a>
-            </li>
+           
 
         </ul>
         <ul class="side-menu">
@@ -321,95 +258,8 @@ if (isset($_SESSION['id'])) {
 
     </main><!-- End main -->
 
-    <script>
-        // Script para abrir e fechar os modais
-        document.getElementById('btnChangePassword').onclick = function() {
-            document.getElementById('passwordModal').style.display = 'block';
-        }
-        document.getElementById('btnChangeEmail').onclick = function() {
-            document.getElementById('emailModal').style.display = 'block';
-        }
-        document.getElementById('closePasswordModal').onclick = function() {
-            document.getElementById('passwordModal').style.display = 'none';
-        }
-        document.getElementById('closeEmailModal').onclick = function() {
-            document.getElementById('emailModal').style.display = 'none';
-        }
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('passwordModal')) {
-                document.getElementById('passwordModal').style.display = 'none';
-            }
-            if (event.target == document.getElementById('emailModal')) {
-                document.getElementById('emailModal').style.display = 'none';
-            }
-        }
-
-        // ALTERAR SENHA
-        document.getElementById('updatePasswordForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Previne o envio padrão do formulário
-
-            let form = event.target;
-            let formData = new FormData(form);
-
-            fetch('assets/php/process_password_change.php', {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('passwordMessage').innerText = data.message;
-                    document.getElementById('passwordMessage').style.color = (data.status === 'success') ? 'green' : 'red';
-                    document.getElementById('passwordMessage').style.display = 'block';
-
-                    if (data.status === 'success') {
-                        // Limpa os campos de senha
-                        form.reset();
-                        // Opcional: Oculta o formulário e exibe apenas a mensagem
-                        form.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    document.getElementById('passwordMessage').innerText = 'Erro na requisição.';
-                    document.getElementById('passwordMessage').style.color = 'red';
-                    document.getElementById('passwordMessage').style.display = 'block';
-                    console.error('Error:', error);
-                });
-        });
-
-        // ALTERAR E-MAIL
-        document.getElementById('updateEmailForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Previne o envio padrão do formulário
-
-            let form = event.target;
-            let formData = new FormData(form);
-
-            fetch('assets/php/process_email_change.php', {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('emailMessage').innerText = data.message;
-                    document.getElementById('emailMessage').style.color = (data.status === 'success') ? 'green' : 'red';
-                    document.getElementById('emailMessage').style.display = 'block';
-
-                    if (data.status === 'success') {
-                        // Limpa os campos do formulário
-                        form.reset();
-                        // Oculta o formulário e exibe apenas a mensagem
-                        form.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    document.getElementById('emailMessage').innerText = 'Erro na requisição.';
-                    document.getElementById('emailMessage').style.color = 'red';
-                    document.getElementById('emailMessage').style.display = 'block';
-                    console.error('Error:', error);
-                });
-        });
-    </script>
-
     <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/configuracoes.js"></script>
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <script src="assets/libs/lozad/lozad.min.js"></script>
     <script src="assets/libs/device/device.js"></script>

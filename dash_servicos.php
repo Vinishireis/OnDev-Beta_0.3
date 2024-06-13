@@ -1,5 +1,5 @@
 <?php
-//COMEÇO CABEÇALHO
+// COMEÇO CABEÇALHO
 session_start();
 
 // Verifica se o usuário está logado
@@ -9,17 +9,29 @@ if (isset($_SESSION['id'])) {
 
     // Recupere o ID do usuário da sessão
     $usuario_id = $_SESSION['id'];
-    $id_developer = $_SESSION['id'];
 
-    // Consulta SQL para recuperar os dados do usuário, incluindo a foto de perfil
-    $query = "SELECT id, foto_perfil FROM tb_cadastro_developer WHERE id = ?";
-    $stmt = mysqli_prepare($mysqli, $query);
-    mysqli_stmt_bind_param($stmt, "i", $usuario_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+    // Consulta SQL para verificar se o usuário está na tabela tb_cadastro_developer
+    $query_developer = "SELECT id, foto_perfil FROM tb_cadastro_developer WHERE id = ?";
+    $stmt_developer = mysqli_prepare($mysqli, $query_developer);
+    mysqli_stmt_bind_param($stmt_developer, "i", $usuario_id);
+    mysqli_stmt_execute($stmt_developer);
+    $result_developer = mysqli_stmt_get_result($stmt_developer);
 
-    // Verifica se a consulta foi bem-sucedida
-    if ($row = mysqli_fetch_assoc($result)) {
+    // Verifica se o usuário está na tabela tb_cadastro_users
+    $query_user = "SELECT id FROM tb_cadastro_users WHERE id = ?";
+    $stmt_user = mysqli_prepare($mysqli, $query_user);
+    mysqli_stmt_bind_param($stmt_user, "i", $usuario_id);
+    mysqli_stmt_execute($stmt_user);
+    $result_user = mysqli_stmt_get_result($stmt_user);
+
+    // Se o usuário está na tabela tb_cadastro_users e não na tb_cadastro_developer, redireciona para 404
+    if ($result_user->num_rows > 0 && $result_developer->num_rows === 0) {
+        header("Location: 404.php");
+        exit;
+    }
+
+    // Se o usuário está na tabela tb_cadastro_developer, prossegue
+    if ($row = mysqli_fetch_assoc($result_developer)) {
         $id = $row['id'];
         $foto_nome = $row['foto_perfil'];
         $caminho_imagem = "assets/img/users/$foto_nome";
@@ -27,15 +39,19 @@ if (isset($_SESSION['id'])) {
         echo "Erro ao recuperar a foto de perfil do banco de dados.";
         exit;
     }
+} else {
+    // Usuário não está logado, redireciona para a página 404
+    header("Location: login.php");
+    exit;
 }
-//FIM CABEÇALHO
+// FIM CABEÇALHO
 
 // Função para lidar com o upload da imagem
 function uploadImagem($nomeCampo) {
     $diretorio = "assets/img/services/";
     $imagemNome = $_FILES[$nomeCampo]['name'];
     $imagemTmp = $_FILES[$nomeCampo]['tmp_name'];
-    $caminhoImagem = $diretorio . $imagemNome;
+    $caminhoImagem = $diretorio . basename($imagemNome);
 
     // Move a imagem para o diretório especificado
     if (move_uploaded_file($imagemTmp, $caminhoImagem)) {
@@ -60,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Verifica se o id_developer é válido
     $query_check_developer = "SELECT id FROM tb_cadastro_developer WHERE id = ?";
     $stmt_check_developer = mysqli_prepare($mysqli, $query_check_developer);
-    mysqli_stmt_bind_param($stmt_check_developer, "i", $id_developer);
+    mysqli_stmt_bind_param($stmt_check_developer, "i", $usuario_id);
     mysqli_stmt_execute($stmt_check_developer);
     mysqli_stmt_store_result($stmt_check_developer);
     if (mysqli_stmt_num_rows($stmt_check_developer) == 0) {
@@ -77,9 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tempo = $_POST['tempo'];
 
     // Prepara a consulta para inserir os dados na tabela
-    $query_insert = "INSERT INTO tb_cad_servico_dev (titulo, descricao, instrucao, categoria, valor, tempo, img, id_developer) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $query_insert = "INSERT INTO tb_cad_servico_dev (titulo, descricao, instrucao, categoria, valor, tempo, img, id_developer) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt_insert = mysqli_prepare($mysqli, $query_insert);
-    mysqli_stmt_bind_param($stmt_insert, 'ssssdisi', $titulo, $descricao, $instrucao, $categoria, $valor, $tempo, $caminhoImagem, $id_developer);
+    mysqli_stmt_bind_param($stmt_insert, 'ssssdisi', $titulo, $descricao, $instrucao, $categoria, $valor, $tempo, $caminhoImagem, $usuario_id);
 
     if (mysqli_stmt_execute($stmt_insert)) {
         header("Location: dashviewserv.php");
@@ -120,47 +137,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
    <!--=============== CSS ===============-->
    <link rel="stylesheet" href="assets/css/dashboard_style.css">
+   <link rel="stylesheet" href="assets/css/dash_servicos_style.css">
 
    <title>OnDev Dashboard</title>
    <style> 
-    .container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #F9F9F9;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    /* Estilos específicos para o formulário */
-    form {
-        display: flex;
-        flex-direction: column;
-    }
-    label {
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-    input, select {
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-    }
-    textarea {
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-        resize: vertical;
-    }
-    button {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 3px;
-        cursor: pointer;
-    }
+   
 </style>
 </head>
 <body>
@@ -178,6 +159,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 					<span class="text">Início</span>
 				</a>
 			</li>
+            <li>
+                <a href="callings_dev.php">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Solicitações</span>
+                </a>
+            </li>
 			<li class="active">
 				<a href="dash_servicos.php">
 					<i class='bx bxs-shopping-bag-alt' ></i>
@@ -191,33 +178,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				</a>
 			</li>
 			<li>
-				<a href="alterar_dados.php">
+				<a href="alterar_dados_dev.php">
 					<i class='bx bxs-doughnut-chart' ></i>
 					<span class="text">Meus Dados</span>
-				</a>
-			</li>
-			<li>
-				<a href="#">
-					<i class='bx bxs-message-dots' ></i>
-					<span class="text">Mensagens</span>
-				</a>
-			</li>
-			<li>
-				<a href="#">
-					<i class='bx bxs-group' ></i>
-					<span class="text">Equipe</span>
 				</a>
 			</li>
 		</ul>
 		<ul class="side-menu">
 			<li>
-				<a href="#">
+				<a href="config_developer.php">
 					<i class='bx bxs-cog' ></i>
 					<span class="text">Configurações</span>
 				</a>
 			</li>
 			<li>
-				<a href="#" class="logout">
+				<a href="logout.php" class="logout">
 					<i class='bx bxs-log-out-circle' ></i>
 					<span class="text">Logout</span>
 				</a>
@@ -286,41 +261,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="container">
                 <h1>Criar Serviço</h1>
 
-        <form action="dash_servicos.php" method="POST" enctype="multipart/form-data" onsubmit="this.querySelector('button[type=submit]').disabled = true;">
-                <label for="titulo">Título do Serviço:</label>
-                <input type="text" id="titulo" name="titulo" required>
-                
-                <label for="descricao">Descrição do Serviço:</label>
-                <textarea id="descricao" name="descricao" rows="4" required></textarea>
-                
-                <label for="instrucoes">Instruções ao Comprador:</label>
-                <textarea id="instrucao" name="instrucao" rows="4"></textarea>
+                <form action="dash_servicos.php" method="POST" enctype="multipart/form-data" onsubmit="this.querySelector('button[type=submit]').disabled = true;">
+        <label for="titulo">Título do Serviço:</label>
+        <input type="text" id="titulo" name="titulo" required>
+        
+        <label for="descricao">Descrição do Serviço:</label>
+        <textarea id="descricao" name="descricao" rows="4" required></textarea>
+        
+        <label for="instrucoes">Instruções ao Comprador:</label>
+        <textarea id="instrucao" name="instrucao" rows="4"></textarea>
 
-                <label for="categoria">Categoria:</label>
-                <select id="categoria" name="categoria" required>
-                    <option disabled selected>Selecione a categoria</option>
-                    <option value="Sites">Desenvolvimento de sites</option>
-                    <option value="Mobile">App mobile</option>
-                    <option value="Design">Design gráfico</option>
-                    <!-- Adicione outras opções de categoria aqui -->
-                </select>
-                
-                <label for="preco">Preço:</label>
-                <input type="number" id="valor" name="valor" min="50" required>
-                
-                <label for="tempo">Tempo para Entregar (Dias | mínimo 1 dia):</label>
-                <input type="number" id="tempo" name="tempo" min="1" required>
-                
-                <label for="imagem">Imagem:</label>
-                <input type="file" id="imagem" name="img" accept="image/*">
-
-                
-                <p>Após o envio, o seu serviço será analisado por um de nossos especialistas. Em caso de irregularidade, você receberá um e-mail para ser retificado ou na plataforma com as instruções a respeito do que deverá ser alterado. Caso o serviço enviado seja aprovado, você será notificado e o serviço será publicado.</p>
-                
-                <label for="termos">Ao criar o seu serviço você concorda com os <a href="#">Termos e Condições</a>.</label>
-                <input type="checkbox" id="termos" required>
-                <button type="submit">Criar Serviço</button>
-        </form>
+        <label for="categoria">Categoria:</label>
+        <select id="categoria" name="categoria" required>
+            <option disabled selected>Selecione a categoria</option>
+            <option value="Sites">Desenvolvimento de sites</option>
+            <option value="Mobile">App mobile</option>
+            <option value="Design">Design gráfico</option>
+            <!-- Adicione outras opções de categoria aqui -->
+        </select>
+        
+        <label for="preco">Preço:</label>
+        <input type="text" id="valor" name="valor" required oninput="formatarPreco(this)">
+        
+        <label for="tempo">Tempo para Entregar (Dias | mínimo 1 dia):</label>
+        <input type="number" id="tempo" name="tempo" min="1" required>
+        
+        <label for="imagem">Imagem:</label>
+        <input type="file" id="imagem" name="img" accept="image/*">
+        
+        <p>Após o envio, o seu serviço será analisado por um de nossos especialistas. Em caso de irregularidade, você receberá um e-mail para ser retificado ou na plataforma com as instruções a respeito do que deverá ser alterado. Caso o serviço enviado seja aprovado, você será notificado e o serviço será publicado.</p>
+        
+        <label for="termos">Ao criar o seu serviço você concorda com os <a href="#">Termos e Condições</a>.</label>
+        <input type="checkbox" id="termos" required>
+        <button type="submit">Criar Serviço</button>
+    </form>
 		</main>
 		<!-- MAIN -->
 	</section>
@@ -332,6 +306,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	
 <script src="assets/js/dashboard.js"></script>
+<script src="assets/js/script_preco.js"></script>
 <script src="assets/libs/jquery/jquery.min.js"></script>
 <script src="assets/libs/lozad/lozad.min.js"></script>
 <script src="assets/libs/device/device.js"></script>

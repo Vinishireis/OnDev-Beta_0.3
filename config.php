@@ -9,15 +9,12 @@ $host = 'localhost';
 $mysqli = new mysqli($host, $usuario, $senha, $database);
 
 // Verifica se houve erros na conexão
-if ($mysqli->connect_errno) {
+if($mysqli->connect_errno) {
     die("Falha ao conectar ao banco de dados: " . $mysqli->connect_error);
 }
 
 // Verifica se a conexão foi estabelecida com sucesso
-if ($mysqli->ping()) {
-    // Conexão bem-sucedida
-} else {
-    // Falha na conexão
+if (!$mysqli->ping()) {
     die("Falha ao conectar ao banco de dados: " . $mysqli->error);
 }
 

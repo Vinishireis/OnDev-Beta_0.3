@@ -9,43 +9,47 @@ if (isset($_SESSION['id'])) {
 
     // Recupere o ID do usuário da sessão
     $id_usuario = $_SESSION['id'];
-    $nome = $_SESSION['nome'];
+	$nome = $_SESSION['nome'];
 
-    // Consulta SQL para recuperar os dados do usuário, incluindo a foto de perfil
-    $query = "SELECT id, foto_perfil FROM tb_cadastro_users WHERE id = $id_usuario";
-    $result = mysqli_query($mysqli, $query);
+    // Consulta SQL para verificar se o usuário está na tabela tb_cadastro_developer
+    $query_developer = "SELECT id, foto_perfil FROM tb_cadastro_developer WHERE id = ?";
+    $stmt_developer = mysqli_prepare($mysqli, $query_developer);
+    mysqli_stmt_bind_param($stmt_developer, "i", $id_usuario);
+    mysqli_stmt_execute($stmt_developer);
+    $result_developer = mysqli_stmt_get_result($stmt_developer);
 
-    // Verifica se a consulta foi bem-sucedida
-    if ($result) {
-        // Extrai os dados da imagem do resultado da consulta
-        $row = mysqli_fetch_assoc($result);
+    // Verifica se o usuário está na tabela tb_cadastro_users
+    $query_user = "SELECT id FROM tb_cadastro_users WHERE id = ?";
+    $stmt_user = mysqli_prepare($mysqli, $query_user);
+    mysqli_stmt_bind_param($stmt_user, "i", $id_usuario);
+    mysqli_stmt_execute($stmt_user);
+    $result_user = mysqli_stmt_get_result($stmt_user);
+
+    // Se o usuário está na tabela tb_cadastro_users e não na tb_cadastro_developer, redireciona para 404
+    if ($result_user->num_rows > 0 && $result_developer->num_rows === 0) {
+        header("Location: 404.php");
+        exit;
+    }
+
+    // Se o usuário está na tabela tb_cadastro_developer, prossegue
+    if ($row = mysqli_fetch_assoc($result_developer)) {
         $id = $row['id'];
         $foto_nome = $row['foto_perfil'];
         
         // Define o caminho completo da imagem
         $caminho_imagem = "assets/img/users/$foto_nome";
-
     } else {
         // Em caso de erro na consulta
         echo "Erro ao recuperar a foto de perfil do banco de dados.";
         exit;
     }
-
-        // Consulta para obter os serviços do usuário logado
-    $query = "SELECT s.id, s.titulo, s.descricao, s.instrucao, s.categoria, s.valor, s.tempo, s.img, 
-    d.nome AS nome_developer, d.sobrenome AS sobrenome_developer
-    FROM tb_cad_servico_dev AS s
-    INNER JOIN wishlist AS w ON s.id = w.service_id
-    INNER JOIN tb_cadastro_developer AS d ON s.id_developer = d.id
-    WHERE w.user_id = ?";
-    $stmt = mysqli_prepare($mysqli, $query);
-    mysqli_stmt_bind_param($stmt, "i", $id_usuario);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+} else {
+    // Usuário não está logado, redireciona para a página 404
+    header("Location: login.php");
+    exit;
 }
+
 ?>
-
-
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
@@ -122,7 +126,7 @@ if (isset($_SESSION['id'])) {
 
 	<!-- SIDEBAR -->
     <section id="sidebar">
-        <a href="index.html" class="brand">
+        <a href="index.php" class="brand">
             <img src="assets/img/logo-oficial.png">
         </a>    
 		<ul class="side-menu top">
@@ -156,13 +160,6 @@ if (isset($_SESSION['id'])) {
 					<span class="text">Meu Perfil</span>
 				</a>
 			</li>
-			<li>
-				<a href="#">
-					<i class='bx bxs-message-dots' ></i>
-					<span class="text">Mensagens</span>
-				</a>
-			</li>
-			
 		</ul>
 		<ul class="side-menu">
 			<li>
@@ -309,6 +306,8 @@ if (isset($_SESSION['id'])) {
 <script src="assets/libs/lozad/lozad.min.js"></script>
 <script src="assets/libs/device/device.js"></script>
 <script src="assets/libs/spincrement/jquery.spincrement.min.js"></script>
+<script src="assets/js/script.js"></script>
+
 
 </body>
 </html>

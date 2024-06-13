@@ -387,7 +387,7 @@ if (isset($_GET['developer_id']) && is_numeric($_GET['developer_id'])) {
                         <div class="col-lg-3 col-md-4 col-12 item">
                             <div class="widget-brand-info">
                                 <div class="widget-brand-info-main">
-                                    <a href="index.html" class="logo" title="OnDev">
+                                    <a href="index.php" class="logo" title="OnDev">
                                         <img data-src="assets/img/logo-white.svg" class="lazy" width="133" height="36" src="assets/img/logo-oficial.png" alt="OnDev" data-loaded="true" style="opacity: 1;">
                                     </a>
                                 </div>
