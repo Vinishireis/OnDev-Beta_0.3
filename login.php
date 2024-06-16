@@ -55,7 +55,19 @@ if(isset($_POST['email']) && isset($_POST['password'])) {
         }
     }
 }
+
+// Verifica se a requisição foi feita através de AJAX
+if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    // Resposta JSON para a API
+    $response = array(
+        'login_sucesso' => $login_sucesso,
+        'login_erro' => $login_erro,
+    );
+
+    echo json_encode($response);
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
