@@ -1,0 +1,105 @@
+/* Estilos Gerais */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.sidebar {
+    background: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.widget {
+    margin-bottom: 20px;
+}
+
+.widget-header {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.dashboard-container {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilos Específicos para Perfil de Usuário */
+.user-dashboard-profile .profile-thumb {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.user-dashboard-profile img {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 3px solid #ddd;
+}
+
+.user-dashboard-profile h5,
+.user-dashboard-profile p {
+    margin: 0;
+    font-weight: 500;
+    color: #333;
+}
+
+.user-dashboard-menu h6 {
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #555;
+}
+
+.user-dashboard-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-dashboard-menu ul li {
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.user-dashboard-menu ul li a {
+    color: #333;
+    font-size: 14px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.user-dashboard-menu ul li a i {
+    margin-right: 10px;
+    color: #555;
+}
+
+/* Estilos para Detalhes do Desenvolvedor */
+.developer-info {
+    margin-top: 20px;
+}
+
+.info-item {
+    margin-bottom: 15px;
+}
+
+.info-item h6 {
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555;
+}
+
+.info-item p {
+    margin: 0;
+    color: #333;
+}
